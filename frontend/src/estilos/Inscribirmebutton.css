@@ -1,0 +1,52 @@
+.subscribe-button {
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-family: 'Spoof Trial', sans-serif;
+    font-weight: 600;
+  }
+  
+.subscribe-button:hover {
+    background-color: #333;
+}
+
+.edit-button {
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-family: 'Spoof Trial', sans-serif;
+    font-weight: 600;
+    margin-left: 30px;
+}
+
+.edit-button:hover {
+    background-color: #333;
+}
+
+.delete-button {
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    margin: 0 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-family: 'Spoof Trial', sans-serif;
+    font-weight: 600;
+}
+
+.delete-button:hover {
+    background-color: #333;
+}

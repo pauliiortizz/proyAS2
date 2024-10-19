@@ -1,0 +1,43 @@
+/* estilos/Login.css */
+
+#formLogin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+.inputEmail, .inputContrasena {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    width: 300px; /* Ancho de las cajas de entrada */
+}
+
+.inputContrasena::placeholder{
+    color: #000;
+}
+
+.inputContrasena .chakra-input__right-element {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    right: 0.5rem; /* Ajuste para centrar el botón en la caja de contraseña */
+}
+
+.inputContrasena button {
+    color: black;
+    font-weight: bold;
+}
+
+button[type="submit"] {
+    background-color: black;
+    color: white;
+    margin-top: 1rem;
+    transition: background-color 0.3s ease;
+    font-family: 'Spoof Trial', sans-serif;
+}
+
+button[type="submit"]:hover {
+    background-color: #333;
+}

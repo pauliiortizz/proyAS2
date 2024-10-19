@@ -1,0 +1,27 @@
+.container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: #ecd4b2; 
+    margin: 40px;
+  }
+
+  .textcontainer{
+    display: flex;
+    flex-direction: column;
+  }
+
+.card-heading{
+    font-family: 'Spoof Trial', sans-serif;
+    font-weight: 600;
+    size: auto;
+}
+
+.card-text {
+    font-family: 'Spoof Trial', sans-serif;
+}
+
+.card-textt {
+    font-family: 'Spoof Trial', sans-serif;
+    font-size: 0.8em;
+}

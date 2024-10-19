@@ -1,0 +1,238 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#root {
+  --clr-main: #cce206;
+  --clr-main-light: #aae06b;
+  --clr-background: #343a40;
+}
+
+.container {
+  max-width: 100vh;
+  padding-inline: 1.5rem;
+  margin: 0 auto;
+}
+
+.main-title {
+  margin-top: 2rem;
+}
+
+.navbar {
+  padding: 0rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--clr-main);
+  border-bottom: 3px solid black;
+}
+
+.navbar .cart-icon {
+  position: relative;
+}
+
+.navbar .badge {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.logo {
+  text-decoration: none;
+  color: black;
+}
+
+.menu {
+  list-style-type: none;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.menu-link {
+  text-decoration: none;
+  color: black;
+  font-size: 1.2rem;
+}
+
+.menu-link:hover {
+  text-decoration: underline;
+}
+
+.align-baseline {
+  vertical-align: baseline !important;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+/* Productos */
+
+.productos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  padding-block: 2rem;
+}
+
+.producto {
+  display: flex;
+  flex-direction: column;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.producto > div {
+  padding: 1rem;
+  background-color: var(--clr-main-light);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.producto > img {
+  width: 100%;
+  aspect-ratio: 2/1;
+  object-fit: cover;
+}
+
+.producto .ver-mas {
+  text-decoration: none;
+  background-color: var(--clr-main);
+  color: white;
+  padding: 0.5rem;
+  width: max-content;
+  border-radius: 0.5rem;
+  transition: 0.2s;
+}
+
+.producto .ver-mas:hover {
+  background-color: black;
+  color: white;
+}
+
+.producto-detalle {
+  padding-block: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+}
+
+.producto-detalle img {
+  width: 100%;
+}
+
+.producto-detalle-info h3 {
+  font-size: 2rem;
+}
+
+/* Detail */
+
+.categoria {
+  font-size: 0.8rem;
+  color: #424242;
+  margin-top: 1rem;
+}
+
+.precio {
+  font-size: 2rem;
+  margin-top: 2rem;
+  font-weight: 600;
+}
+
+.item-count {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.item-count button,
+.agregar-al-carrito,
+.enviar {
+  background-color: var(--clr-background);
+  border: 0;
+  width: 2rem;
+  height: 2rem;
+  color: white;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1;
+  border: 2px solid var(--clr-main);
+  transition: 0.2s;
+}
+
+.item-count button:hover,
+.agregar-al-carrito:hover,
+.enviar:hover {
+  background-color: white;
+  color: black;
+}
+
+.agregar-al-carrito,
+.enviar {
+  width: auto;
+  height: auto;
+  margin-top: 1rem;
+  padding: 1rem;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.formulario input {
+  padding: 0.5rem;
+  width: 18rem;
+  border-radius: 0.5rem;
+  border: 2px solid black;
+}
+
+.formulario input:focus {
+  outline: 0;
+  border: 2px solid var(--clr-main);
+  outline: 2px solid var(--clr-main);
+}
+
+/* Ejemplo de estilos para el tema oscuro */
+.dark-theme {
+  background-color: #333333;
+  color: #ffffff;
+}
+
+/* Ejemplo de estilos para botones en el tema oscuro */
+.dark-theme .btn {
+  background-color: #ffffff;
+  color: #333333;
+}
+
+/* Ejemplo de estilos para enlaces en el tema oscuro */
+.dark-theme a {
+  color: #00bfff; /* Color de enlace en el tema oscuro */
+}
+
+/* Estilos para botones de contorno en el tema oscuro */
+.dark-theme .btn-outline-dark {
+  border-color: #ffffff; /* Color del borde en el tema oscuro */
+  color: #ffffff; /* Color del texto en el tema oscuro */
+}
+
+/* Establece un fondo de botón oscuro para mayor contraste si es necesario */
+.dark-theme .btn-outline-dark {
+  background-color: #333333;
+}
+
+.dark-theme .badge.bg-dark.text-white {
+  background-color: #343a40; /* Color de fondo oscuro en el tema oscuro */
+  color: #ffffff; /* Color del texto en el tema oscuro */
+}

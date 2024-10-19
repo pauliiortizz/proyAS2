@@ -1,0 +1,29 @@
+.search {
+    border-radius: 8px;
+    background-color: black; /* Fondo negro */
+    width: 35%; /* 1/6 de la pantalla */
+    margin-top: 15px; /* Centra el contenedor verticalmente y añade márgenes arriba y abajo */
+    margin-left: 5px;
+    margin-bottom: 15px;
+}
+
+.input {
+    font-family: 'Spoof Trial', sans-serif;
+    color: white; /* Texto blanco */
+    width: 100%; /* Ocupar todo el ancho del contenedor */
+    border: 1px solid white; /* Bordes blancos */
+    outline: none; /* Quita el borde por defecto al hacer clic */
+}
+
+/* Cambiar el color del placeholder */
+.input::placeholder {
+    color: white; /* Color del placeholder blanco */
+}
+
+#icono {
+    color: white; /* Color del ícono blanco */
+}
+
+.search:hover {
+    background-color: #333;
+}

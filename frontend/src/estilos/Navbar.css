@@ -1,0 +1,34 @@
+
+.contenedor{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: #ecd4b2;
+  }
+
+.logoContainer{
+    width: 100px; /* Ajusta el tamaño del logo según sea necesario */
+    height: auto;
+    margin-right: 10px; /* Espacio entre el logo y el título */
+    margin: 20px;
+}
+
+.titleContainer{
+    font-size: 50px;
+    color: black;
+    margin: 20px;
+    font-family: 'Spoof Trial', sans-serif;
+    font-weight: 800;
+}
+
+.menu{
+    gap: 20px;
+    margin: 20px;
+    margin-left: auto;
+}
+
+#welcomeMessage{
+    margin: 20px;
+    margin-left: auto;
+}
+

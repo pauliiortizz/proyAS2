@@ -1,0 +1,110 @@
+[
+    {
+        "course_id": 1,
+        "Nombre": "golang para principiantes",
+        "Profesor_id": 8,
+        "Categoria": "programacion",
+        "Descripcion": "curso basico de programacion de golang",
+        "Valoracion": 5,
+        "Duracion": 9000,
+        "Requisitos": "bajo",
+        "Url_image": " ",
+        "Fecha_inicio": "2020-06-09T00:00:00-03:00"
+    },
+    {
+        "course_id": 2,
+        "Nombre": "bartender ricos tragos",
+        "Profesor_id": 2,
+        "Categoria": "cocteleria",
+        "Descripcion": "aprende a hacer los mejores tragos",
+        "Valoracion": 3.7,
+        "Duracion": 45,
+        "Requisitos": "bajo",
+        "Url_image": " ",
+        "Fecha_inicio": "2024-06-03T00:00:00-03:00"
+    },
+    {
+        "course_id": 3,
+        "Nombre": "peluqueria intensiva",
+        "Profesor_id": 4,
+        "Categoria": "belleza",
+        "Descripcion": "aprende a hacer desde simples trenzas hasta peinados elaborados",
+        "Valoracion": 4.2,
+        "Duracion": 80,
+        "Requisitos": "bajo",
+        "Url_image": " ",
+        "Fecha_inicio": "2024-07-10T00:00:00-03:00"
+    },
+    {
+        "course_id": 4,
+        "Nombre": "golang avanzado",
+        "Profesor_id": 8,
+        "Categoria": "programacion",
+        "Descripcion": "curso avanzado del lengueje golang",
+        "Valoracion": 4,
+        "Duracion": 600,
+        "Requisitos": "alto",
+        "Url_image": " ",
+        "Fecha_inicio": "2024-07-10T00:00:00-03:00"
+    },
+    {
+        "course_id": 5,
+        "Nombre": "pasteleria con Lucas",
+        "Profesor_id": 19,
+        "Categoria": "cocina",
+        "Descripcion": "curso basico y divertido de pasteleria",
+        "Valoracion": 3.5,
+        "Duracion": 150,
+        "Requisitos": "bajo",
+        "Url_image": " ",
+        "Fecha_inicio": "2024-08-12T00:00:00-03:00"
+    },
+    {
+        "course_id": 6,
+        "Nombre": "bossa nova en guitarra",
+        "Profesor_id": 18,
+        "Categoria": "musica",
+        "Descripcion": "toca canciones del genero bossa nova en tu guitarra",
+        "Valoracion": 2.3,
+        "Duracion": 68,
+        "Requisitos": "intermedio",
+        "Url_image": " ",
+        "Fecha_inicio": "2024-03-10T00:00:00-03:00"
+    },
+    {
+        "course_id": 7,
+        "Nombre": "maquillaje artistico, brillos y fantasia",
+        "Profesor_id": 17,
+        "Categoria": "belleza",
+        "Descripcion": "crea tu propio look con rodolfo y sus esplendidos maquillajes artisticos",
+        "Valoracion": 4.8,
+        "Duracion": 72,
+        "Requisitos": "bajo",
+        "Url_image": " ",
+        "Fecha_inicio": "2024-09-09T00:00:00-03:00"
+    },
+    {
+        "course_id": 8,
+        "Nombre": "coffee coctels",
+        "Profesor_id": 19,
+        "Categoria": "cocteleria",
+        "Descripcion": "aprende a preparar distintos coctels usando cafe",
+        "Valoracion": 3.9,
+        "Duracion": 70,
+        "Requisitos": "intermedio",
+        "Url_image": " ",
+        "Fecha_inicio": "2024-11-01T00:00:00-03:00"
+    },
+    {
+        "course_id": 9,
+        "Nombre": "c++ primeros pasos",
+        "Profesor_id": 8,
+        "Categoria": "programacion",
+        "Descripcion": "aprende a dar tus primeros pasos la programacion con el mejor profe",
+        "Valoracion": 5,
+        "Duracion": 120,
+        "Requisitos": "bajo",
+        "Url_image": " ",
+        "Fecha_inicio": "2024-03-02T00:00:00-03:00"
+    }
+]
