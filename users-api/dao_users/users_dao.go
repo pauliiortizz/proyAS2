@@ -1,13 +1,11 @@
-package dao_users
+package users
 
 type User struct {
-	User_id  string `bson:"user_id"`
-	Username string `bson:"username"`
-	Password string `bson:"password"`
-	Nombre   string `bson:"nombre"`
-	Apellido string `bson:"apellido"`
-	Email    string `bson:"email"`
-	Admin    bool   `bson:"admin"`
+	ID       int64
+	Username string
+	Password string
+	Nombre   string
+	Apellido string
+	Email    string
+	Admin    bool
 }
-
-type Users []User

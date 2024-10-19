@@ -1,7 +1,7 @@
 package clients_comentarios
 import (
-	"comentarios-api/clients_comentarios"
-	"comentarios-api/dao_comentarios"
+	"backend/clients"
+	"proyecto/comentarios-api/dao_comentarios"
 	log "github.com/sirupsen/logrus"
 )
 

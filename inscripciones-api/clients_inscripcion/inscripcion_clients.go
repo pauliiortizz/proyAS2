@@ -1,8 +1,9 @@
 package clients_inscripcion
+
 import (
-	"inscripciones-api/clients_inscripcion"
-	"inscripciones-api/dao_inscripcion"
 	log "github.com/sirupsen/logrus"
+	//"inscripciones-api/clients_inscripcion"
+	"inscripciones/dao_inscripcion"
 )
 
 type inscripcionClient struct{}
@@ -32,7 +33,7 @@ func (s *inscripcionClient) InsertInscr(inscripcion dao_inscripcion.Inscripcion)
 	return inscripcion, nil
 }
 
-func (s *inscripcionClient) GetInscripcion()dao_inscripcion.Inscripciones {
+func (s *inscripcionClient) GetInscripcion() dao_inscripcion.Inscripciones {
 	var inscripciones dao_inscripcion.Inscripciones
 	clients.Db.Find(&inscripciones) //adaptar
 
@@ -47,5 +48,3 @@ func (s *inscripcionClient) GetCourseByUserId(id int) dao_inscripcion.Inscripcio
 	log.Debug("Inscripciones: ", inscripciones)
 	return inscripciones
 }
-
-

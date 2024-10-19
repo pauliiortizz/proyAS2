@@ -1,12 +1,12 @@
 package controllers_users
 
 import (
-	dto "backend/dto"
-	service "backend/services/users"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
+	dto "users/domain_users"
+	service "users/services_users"
 )
 
 func GetUserById(c *gin.Context) {
@@ -16,7 +16,7 @@ func GetUserById(c *gin.Context) {
 
 	var userDto dto.UserDto
 	id, _ := strconv.Atoi(c.Param("id"))
-	userDto, err := service.UserService.GetUserById(id)
+	userDto, err := service.UserService.GetById(id)
 	if err != nil {
 		log.Error(err.Error())
 		c.JSON(http.StatusBadRequest, err.Error())

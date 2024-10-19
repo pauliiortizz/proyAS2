@@ -50,9 +50,9 @@ func (repository Cache) GetUserByID(ctx context.Context, id string) (usersDAO.Us
 	return userDAO, nil
 }
 
-func (repository Cache) Create(ctx context.Context, user usersDAO.User) (string, error) {
-	key := fmt.Sprintf(keyFormat, user.User_id)
+func (repository Cache) Create(ctx context.Context, user usersDAO.User) (int64, error) {
+	key := fmt.Sprintf(keyFormat, user.ID)
 	fmt.Println("saving with duration", repository.duration)
 	repository.client.Set(key, user, repository.duration)
-	return user.User_id, nil
+	return user.ID, nil
 }

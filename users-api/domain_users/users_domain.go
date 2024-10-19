@@ -1,7 +1,8 @@
 package domain_users
 
 type UserDto struct {
-	User_id  int    `json:"user_id"`
+	User_id  int64  `json:"user_id"`
+	Username string `json:"username"`
 	Email    string `json:"username"`
 	Password string `json:"password"`
 	Nombre   string `json:"first_name"`
@@ -15,7 +16,7 @@ type LoginDto struct {
 }
 
 type LoginResponseDto struct {
-	User_id int    `json:"user_id"`
+	User_id int64  `json:"user_id"`
 	Token   string `json:"token"`
 	Admin   bool   `json:"admin"`
 }

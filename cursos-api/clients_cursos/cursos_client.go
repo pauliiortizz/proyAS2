@@ -1,10 +1,10 @@
 package clients_cursos
 
 import (
-"cursos-api/clients_cursos"
-"cursos-api/dao_cursos"
-//"fmt"
-log "github.com/sirupsen/logrus"
+	//"backend/clients"
+	//"backend/model"
+	"cursos/dao_cursos"
+	log "github.com/sirupsen/logrus"
 )
 
 type coursesClient struct{}
@@ -37,7 +37,7 @@ func (s *coursesClient) InsertCourse(courses dao_cursos.Curso) (dao_cursos.Curso
 
 func (s *coursesClient) EditCourse(id int, updatedCourse dao_cursos.Curso) (dao_cursos.Curso, error) {
 	var course dao_cursos.Curso
-	if err := clients.Db.Where("course_id = ?", id).First(&course).Error; err != nil  { //adaptar
+	if err := clients.Db.Where("course_id = ?", id).First(&course).Error; err != nil { //adaptar
 		log.Debug(err, id)
 		return course, err
 	}

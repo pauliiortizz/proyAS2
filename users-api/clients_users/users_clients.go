@@ -1,8 +1,8 @@
 package clients_users
+
 import (
-	"users-api/clients_users"
-	"users-api/dao_users"
 	log "github.com/sirupsen/logrus"
+	dao_users "users/dao_users"
 )
 
 type userClient struct{}
