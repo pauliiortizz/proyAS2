@@ -1,26 +1,25 @@
 package repositories_users
 
 import (
-	"context"
 	"fmt"
 	"github.com/karlseguin/ccache"
 	"time"
-	usersDAO "users/dao_users"
+	"users/dao_users"
 )
+
+type CacheConfig struct {
+	TTL          time.Duration
+	MaxSize      int64
+	ItemsToPrune uint32
+}
 
 const (
 	keyFormat = "user:%s"
 )
 
-type CacheConfig struct {
-	MaxSize      int64
-	ItemsToPrune uint32
-	Duration     time.Duration
-}
-
 type Cache struct {
-	client   *ccache.Cache
-	duration time.Duration
+	client *ccache.Cache
+	ttl    time.Duration
 }
 
 func NewCache(config CacheConfig) Cache {
@@ -28,31 +27,52 @@ func NewCache(config CacheConfig) Cache {
 		MaxSize(config.MaxSize).
 		ItemsToPrune(config.ItemsToPrune))
 	return Cache{
-		client:   client,
-		duration: config.Duration,
+		client: client,
+		ttl:    config.TTL,
 	}
 }
 
-func (repository Cache) GetUserByID(ctx context.Context, id string) (usersDAO.User, error) {
+func (repository Cache) GetUserById(id string) (users.User, error) {
 	key := fmt.Sprintf(keyFormat, id)
 	item := repository.client.Get(key)
 	fmt.Println(key)
 	if item == nil {
-		return usersDAO.User{}, fmt.Errorf("not found item with key %s", key)
+		return users.User{}, fmt.Errorf("not found item with key %s", key)
 	}
 	if item.Expired() {
-		return usersDAO.User{}, fmt.Errorf("item with key %s is expired", key)
+		return users.User{}, fmt.Errorf("item with key %s is expired", key)
 	}
-	userDAO, ok := item.Value().(usersDAO.User)
+	userDAO, ok := item.Value().(users.User)
 	if !ok {
-		return usersDAO.User{}, fmt.Errorf("error converting item with key %s", key)
+		return users.User{}, fmt.Errorf("error converting item with key %s", key)
 	}
 	return userDAO, nil
 }
 
-func (repository Cache) Create(ctx context.Context, user usersDAO.User) (int64, error) {
-	key := fmt.Sprintf(keyFormat, user.ID)
-	fmt.Println("saving with duration", repository.duration)
-	repository.client.Set(key, user, repository.duration)
-	return user.ID, nil
+func (repository Cache) GetUserByEmail(email string) (users.User, error) {
+	// Use username as cache key
+	userKey := fmt.Sprintf("user:username:%s", email)
+
+	// Try to get from cache
+	item := repository.client.Get(userKey)
+	if item != nil && !item.Expired() {
+		// Return cached value
+		user, ok := item.Value().(users.User)
+		if !ok {
+			return users.User{}, fmt.Errorf("failed to cast cached value to user")
+		}
+		return user, nil
+	}
+
+	// If not found, return cache miss error
+	return users.User{}, fmt.Errorf("cache miss for username %s", email)
 }
+
+func (repository Cache) CreateUser(user users.User) (int64, error) {
+	key := fmt.Sprintf(keyFormat, user.User_id)
+	fmt.Println("saving with duration", repository.ttl)
+	repository.client.Set(key, user, repository.ttl)
+	return user.User_id, nil
+}
+
+//agregar login

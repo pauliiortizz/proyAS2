@@ -1,20 +1,20 @@
 package users
 
 import (
+	//errores ""
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
 	dao "users/dao_users"
 	domain "users/domain_users"
+	errores "users/extras"
 )
 
 type Repository interface {
-	GetAll() ([]dao.User, error)
-	GetByID(id int64) (dao.User, error)
-	GetByUsername(username string) (dao.User, error)
-	Create(user dao.User) (int64, error)
-	Update(user dao.User) error
-	Delete(id int64) error
+	GetUserById(id int64) (dao.User, errores.ApiError)
+	Login(loginDto domain.Login) (domain.TokenDto, errores.ApiError)
+	CreateUser(registro dao.User) (int64, errores.ApiError)
+	GetUserByEmail(email string) (dao.User, error)
 }
 
 type Tokenizer interface {
@@ -37,232 +37,100 @@ func NewService(mainRepository, cacheRepository, memcachedRepository Repository,
 	}
 }
 
-func (service Service) GetAll() ([]domain.UserDto, error) {
-	users, err := service.mainRepository.GetAll()
-	if err != nil {
-		return nil, fmt.Errorf("error getting all users: %s", err.Error())
-	}
-
-	result := make([]domain.UserDto, 0)
-	for _, user := range users {
-		result = append(result, domain.UserDto{
-			User_id:  user.ID,
-			Username: user.Username,
-			Password: user.Password,
-		})
-	}
-
-	return result, nil
-}
-
-func (service Service) GetByID(id int64) (domain.UserDto, error) {
-	// Check in cache first
-	user, err := service.cacheRepository.GetByID(id)
-	if err == nil {
-		return service.convertUser(user), nil
-	} else {
-		fmt.Println(fmt.Sprintf("warning: error getting user by ID from cache: %s", err.Error()))
-	}
-
-	// Check in memcached
-	user, err = service.memcachedRepository.GetByID(id)
-	if err == nil {
-		if _, err := service.cacheRepository.Create(user); err != nil {
-			fmt.Println(fmt.Sprintf("warning: error caching user after memcached retrieval: %s", err.Error()))
-		}
-		return service.convertUser(user), nil
-	} else {
-		fmt.Println(fmt.Sprintf("warning: error getting user by ID from memcached: %s", err.Error()))
-	}
-
-	// Check in main repository
-	user, err = service.mainRepository.GetByID(id)
-	if err != nil {
-		return domain.UserDto{}, fmt.Errorf("error getting user by ID: %w", err)
-	}
-
-	// Save in cache and memcached
-	if _, err := service.cacheRepository.Create(user); err != nil {
-		fmt.Println(fmt.Sprintf("warning: error caching user after main retrieval: %s", err.Error()))
-	}
-	if _, err := service.memcachedRepository.Create(user); err != nil {
-		fmt.Println(fmt.Sprintf("warning: error saving user in memcached: %s", err.Error()))
-	}
-
-	return service.convertUser(user), nil
-}
-
-func (service Service) GetByUsername(username string) (domain.UserDto, error) {
-	// Check in cache first
-	user, err := service.cacheRepository.GetByUsername(username)
-	if err == nil {
-		return service.convertUser(user), nil
-	} else {
-		fmt.Println(fmt.Sprintf("warning: error getting user by username from cache: %s", err.Error()))
-	}
-
-	// Check memcached
-	user, err = service.memcachedRepository.GetByUsername(username)
-	if err == nil {
-		if _, err := service.cacheRepository.Create(user); err != nil {
-			fmt.Println(fmt.Sprintf("warning: error caching user after memcached retrieval: %s", err.Error()))
-		}
-		return service.convertUser(user), nil
-	} else {
-		fmt.Println(fmt.Sprintf("warning: error getting user by username from memcached: %s", err.Error()))
-	}
-
-	// Check main repository
-	user, err = service.mainRepository.GetByUsername(username)
-	if err != nil {
-		return domain.UserDto{}, fmt.Errorf("error getting user by username: %w", err)
-	}
-
-	// Save in cache and memcached
-	if _, err := service.cacheRepository.Create(user); err != nil {
-		fmt.Println(fmt.Sprintf("warning: error caching user after main retrieval: %s", err.Error()))
-	}
-	if _, err := service.memcachedRepository.Create(user); err != nil {
-		fmt.Println(fmt.Sprintf("warning: error saving user in memcached: %s", err.Error()))
-	}
-
-	return service.convertUser(user), nil
-}
-
-func (service Service) Create(user domain.UserDto) (int64, error) {
-	// Hash the password
-	passwordHash := Hash(user.Password)
-
-	newUser := dao.User{
-		Username: user.Username,
-		Password: passwordHash,
-	}
-
-	// Create in main repository
-	id, err := service.mainRepository.Create(newUser)
-	if err != nil {
-		return 0, fmt.Errorf("error creating user: %s", err.Error())
-	}
-
-	// Add to cache and memcached
-	newUser.ID = id
-	if _, err := service.cacheRepository.Create(newUser); err != nil {
-		fmt.Println(fmt.Sprintf("warning: error caching new user: %s", err.Error()))
-	}
-	if _, err := service.memcachedRepository.Create(newUser); err != nil {
-		fmt.Println(fmt.Sprintf("warning: error saving new user in memcached: %s", err.Error()))
-	}
-
-	return id, nil
-}
-
-func (service Service) Update(user domain.UserDto) error {
-	// Hash the password if provided
-	var passwordHash string
-	if user.Password != "" {
-		passwordHash = Hash(user.Password)
-	} else {
-		existingUser, err := service.mainRepository.GetByID(user.User_id)
-		if err != nil {
-			return fmt.Errorf("error retrieving existing user: %s", err.Error())
-		}
-		passwordHash = existingUser.Password
-	}
-
-	// Update in main repository
-	err := service.mainRepository.Update(dao.User{
-		ID:       user.User_id,
-		Username: user.Username,
-		Password: passwordHash,
-	})
-	if err != nil {
-		return fmt.Errorf("error updating user: %s", err.Error())
-	}
-
-	// Update in cache and memcached
-	updatedUser := dao.User{
-		ID:       user.User_id,
-		Username: user.Username,
-		Password: passwordHash,
-	}
-	if err := service.cacheRepository.Update(updatedUser); err != nil {
-		fmt.Println(fmt.Sprintf("warning: error updating user in cache: %s", err.Error()))
-	}
-	if err := service.memcachedRepository.Update(updatedUser); err != nil {
-		fmt.Println(fmt.Sprintf("warning: error updating user in memcached: %s", err.Error()))
-	}
-
-	return nil
-}
-
-func (service Service) Delete(id int64) error {
-	// Delete from main repository
-	err := service.mainRepository.Delete(id)
-	if err != nil {
-		return fmt.Errorf("error deleting user: %s", err.Error())
-	}
-
-	// Delete from cache and memcached
-	if err := service.cacheRepository.Delete(id); err != nil {
-		fmt.Println(fmt.Sprintf("warning: error deleting user from cache: %s", err.Error()))
-	}
-	if err := service.memcachedRepository.Delete(id); err != nil {
-		fmt.Println(fmt.Sprintf("warning: error deleting user from memcached: %s", err.Error()))
-	}
-
-	return nil
-}
-
-func (service Service) Login(username string, password string) (domain.LoginResponseDto, error) {
-	// Hash the password
-	passwordHash := Hash(password)
-
-	// Try to get user from cache repository first
-	user, err := service.cacheRepository.GetByUsername(username)
+func (service Service) GetUserById(id int64) (domain.User, errores.ApiError) {
+	// Intentar obtener el usuario desde el repositorio de caché
+	user, err := service.cacheRepository.GetUserById(id)
 	if err != nil {
 		fmt.Println(fmt.Sprintf("warning: error getting user from cache repository: %s", err.Error()))
 
-		// If not found in cache, try to get user from memcached repository
-		user, err = service.memcachedRepository.GetByUsername(username)
+		// Si no está en el caché repository, intentar obtenerlo desde memcached
+		user, err = service.memcachedRepository.GetUserById(id)
 		if err != nil {
 			fmt.Println(fmt.Sprintf("warning: error getting user from memcached repository: %s", err.Error()))
 
-			// If not found in memcached, try to get user from the main repository (database)
-			user, err = service.mainRepository.GetByUsername(username)
+			// Si tampoco está en memcached, buscar en el repositorio principal (base de datos)
+			user, err = service.mainRepository.GetUserById(id)
 			if err != nil {
-				// If the user is not found in the main repository, return an error
-				return domain.LoginResponseDto{}, fmt.Errorf("error getting user by username from main repository: %w", err)
+				// Si el usuario no se encuentra en ninguno de los repositorios, devolver un error
+				return domain.User{}, errores.NewBadRequestApiError("user not found")
 			}
 
-			// Save the found user in both cache and memcached repositories
-			if _, err := service.cacheRepository.Create(user); err != nil {
+			// Guardar el usuario en el repositorio de caché y en memcached si fue encontrado en la base de datos principal
+			if _, err := service.cacheRepository.CreateUser(user); err != nil {
 				fmt.Println(fmt.Sprintf("warning: error caching user in cache repository: %s", err.Error()))
 			}
-			if _, err := service.memcachedRepository.Create(user); err != nil {
+			if _, err := service.memcachedRepository.CreateUser(user); err != nil {
 				fmt.Println(fmt.Sprintf("warning: error caching user in memcached repository: %s", err.Error()))
 			}
 		} else {
-			// Save the found user in the cache repository for future access
-			if _, err := service.cacheRepository.Create(user); err != nil {
+			// Sí se encuentra en memcached, guardarlo en el caché repository
+			if _, err := service.cacheRepository.CreateUser(user); err != nil {
 				fmt.Println(fmt.Sprintf("warning: error caching user in cache repository: %s", err.Error()))
 			}
 		}
 	}
 
-	// Compare passwords
-	if user.Password != passwordHash {
-		return domain.LoginResponseDto{}, fmt.Errorf("invalid credentials")
+	// Verificar si el ID del usuario es 0, lo que indica que no se encontró el usuario
+	if user.User_id == 0 {
+		return domain.User{}, errores.NewBadRequestApiError("user not found")
 	}
 
-	// Generate token
-	token, err := service.tokenizer.GenerateToken(user.Username, user.ID)
+	// Aquí asigna los valores correspondientes del usuario al DTO
+	userDto := domain.User{
+		User_id:  user.User_id,
+		Email:    user.Email,
+		Password: user.Password,
+		Nombre:   user.Nombre,
+		Apellido: user.Apellido,
+		Admin:    user.Admin,
+	}
+
+	// Devolver el usuario
+	return userDto, nil
+}
+
+//var jwtKey = []byte("secret_key")
+
+func (service Service) Login(email string, password string) (domain.LoginResponse, error) {
+	passwordHash := Hash(password)
+
+	user, err := service.cacheRepository.GetUserByEmail(email)
 	if err != nil {
-		return domain.LoginResponseDto{}, fmt.Errorf("error generating token: %w", err)
+		fmt.Println(fmt.Sprintf("warning: error getting user from cache repository: %s", err.Error()))
+
+		user, err = service.memcachedRepository.GetUserByEmail(email)
+		if err != nil {
+			fmt.Println(fmt.Sprintf("warning: error getting user from memcached repository: %s", err.Error()))
+
+			user, err = service.mainRepository.GetUserByEmail(email)
+			if err != nil {
+				return domain.LoginResponse{}, fmt.Errorf("error getting user by username from main repository: %w", err)
+			}
+
+			if _, err := service.cacheRepository.CreateUser(user); err != nil {
+				fmt.Println(fmt.Sprintf("warning: error caching user in cache repository: %s", err.Error()))
+			}
+			if _, err := service.memcachedRepository.CreateUser(user); err != nil {
+				fmt.Println(fmt.Sprintf("warning: error caching user in memcached repository: %s", err.Error()))
+			}
+		} else {
+			if _, err := service.cacheRepository.CreateUser(user); err != nil {
+				fmt.Println(fmt.Sprintf("warning: error caching user in cache repository: %s", err.Error()))
+			}
+		}
 	}
 
-	// Send the login response
-	return domain.LoginResponseDto{
-		User_id: user.ID,
+	if user.Password != passwordHash {
+		return domain.LoginResponse{}, fmt.Errorf("invalid credentials")
+	}
+
+	token, err := service.tokenizer.GenerateToken(user.Email, user.User_id)
+	if err != nil {
+		return domain.LoginResponse{}, fmt.Errorf("error generating token: %w", err)
+	}
+
+	return domain.LoginResponse{
+		User_id: user.User_id,
 		Token:   token,
 		Admin:   user.Admin,
 	}, nil
@@ -273,10 +141,37 @@ func Hash(input string) string {
 	return hex.EncodeToString(hash[:])
 }
 
-func (service Service) convertUser(user dao.User) domain.UserDto {
-	return domain.UserDto{
-		User_id:  user.ID,
-		Username: user.Username,
-		Password: user.Password,
+func (service Service) CreateUser(registro domain.User) (int64, errores.ApiError) {
+	// Hashear la contraseña
+	passwordHash := Hash(registro.Password)
+
+	// Crear nuevo usuario en la base de datos principal
+	nuevoUser := dao.User{
+		Password: passwordHash,
+		Nombre:   registro.Nombre,
+		Apellido: registro.Apellido,
+		Email:    registro.Email,
+		Admin:    registro.Admin,
 	}
+
+	// Intentar crear el usuario en el repositorio principal
+	id, err := service.mainRepository.CreateUser(nuevoUser)
+	if err != nil {
+		return 0, errores.NewInternalServerApiError("error creating user", err)
+	}
+
+	// Asignar el ID al nuevo usuario
+	nuevoUser.User_id = id
+
+	// Almacenar en caché (advertencia si falla, sin detener el flujo)
+	if _, err := service.cacheRepository.CreateUser(nuevoUser); err != nil {
+		fmt.Println(fmt.Sprintf("warning: error caching new user: %s", err.Error()))
+	}
+
+	// Almacenar en memcached (advertencia si falla, sin detener el flujo)
+	if _, err := service.memcachedRepository.CreateUser(nuevoUser); err != nil {
+		fmt.Println(fmt.Sprintf("warning: error saving new user in memcached: %s", err.Error()))
+	}
+
+	return id, nil
 }

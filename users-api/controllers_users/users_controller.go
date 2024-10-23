@@ -5,18 +5,34 @@ import (
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
-	dto "users/domain_users"
-	service "users/services_users"
+	domain "users/domain_users"
+	errores "users/extras"
 )
 
-func GetUserById(c *gin.Context) {
+type Service interface {
+	GetUserById(id int64) (domain.User, errores.ApiError)
+	Login(email string, password string) (domain.LoginResponse, errores.ApiError)
+	CreateUser(user domain.User) (domain.LoginResponse, errores.ApiError)
+}
+
+type Controller struct {
+	service Service
+}
+
+func NewController(service Service) Controller {
+	return Controller{
+		service: service,
+	}
+}
+
+func (controller Controller) GetUserById(c *gin.Context) {
 	log.Debug("User id: " + c.Param("id"))
 
 	// Get Back User
 
-	var userDto dto.UserDto
+	var userDto domain.User
 	id, _ := strconv.Atoi(c.Param("id"))
-	userDto, err := service.UserService.GetById(id)
+	userDto, err := controller.service.GetUserById(int64(id))
 	if err != nil {
 		log.Error(err.Error())
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -25,8 +41,8 @@ func GetUserById(c *gin.Context) {
 	c.JSON(http.StatusOK, userDto)
 }
 
-func Login(c *gin.Context) {
-	var loginDto dto.LoginDto
+func (controller Controller) Login(c *gin.Context) {
+	var loginDto domain.Login
 	er := c.BindJSON(&loginDto)
 	if er != nil {
 		log.Error(er.Error())
@@ -34,29 +50,31 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	tokenDto, err := service.UserService.Login(loginDto)
+	tokenDto, err := controller.service.Login(loginDto.Email, loginDto.Password)
 	if err != nil {
-		c.JSON(err.Status(), err)
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 	c.JSON(http.StatusOK, tokenDto)
 }
 
-func CreateUser(s *gin.Context) {
-	var user dto.UserDto
-	err := s.BindJSON(&user)
+func (controller Controller) CreateUser(c *gin.Context) {
+	var user domain.User
+	err := c.BindJSON(&user)
 	if err != nil {
 		log.Error("Error al parsear el JSON: ", err.Error())
-		s.JSON(http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	user, er := service.UserService.CreateUser(user)
+	id, er := controller.service.CreateUser(user)
 	if er != nil {
 		log.Error("Error al registrar el usuario: ", er.Error())
-		s.JSON(http.StatusInternalServerError, er.Error())
+		c.JSON(http.StatusInternalServerError, er.Error())
 		return
 	}
 
-	s.JSON(http.StatusCreated, user)
+	c.JSON(http.StatusCreated, gin.H{
+		"id": id,
+	})
 }

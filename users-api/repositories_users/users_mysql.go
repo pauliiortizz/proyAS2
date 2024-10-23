@@ -7,6 +7,7 @@ import (
 	_ "github.com/go-sql-driver/mysql" // Import MySQL driver
 	"log"
 	users "users/dao_users"
+	errores "users/extras"
 )
 
 type MySQLConfig struct {
@@ -41,29 +42,11 @@ func NewMySQL(config MySQLConfig) MySQL {
 	}
 }
 
-func (repository MySQL) GetAll() ([]users.User, error) {
-	rows, err := repository.db.Query("SELECT id, username, password FROM users")
-	if err != nil {
-		return nil, fmt.Errorf("error fetching all users: %w", err)
-	}
-	defer rows.Close()
-
-	var usersList []users.User
-	for rows.Next() {
-		var user users.User
-		if err := rows.Scan(&user.ID, &user.Username, &user.Password); err != nil {
-			return nil, fmt.Errorf("error scanning user row: %w", err)
-		}
-		usersList = append(usersList, user)
-	}
-	return usersList, nil
-}
-
-func (repository MySQL) GetByID(id int64) (users.User, error) {
+func (repository MySQL) GetUserById(id int64) (users.User, error) {
 	var user users.User
 	if err := repository.db.
-		QueryRow("SELECT id, username, password FROM users WHERE id = ?", id).
-		Scan(&user.ID, &user.Username, &user.Password); err != nil {
+		QueryRow("SELECT id, email, password, nombre, apellido, admin FROM users WHERE id = ?", id).
+		Scan(&user.User_id, &user.Email, &user.Password, &user.Nombre, &user.Apellido, &user.Admin); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return user, fmt.Errorf("user not found")
 		}
@@ -72,11 +55,11 @@ func (repository MySQL) GetByID(id int64) (users.User, error) {
 	return user, nil
 }
 
-func (repository MySQL) GetByUsername(username string) (users.User, error) {
+func (repository MySQL) GetUserByEmail(email string) (users.User, error) {
 	var user users.User
 	if err := repository.db.
-		QueryRow("SELECT id, username, password FROM users WHERE username = ?", username).
-		Scan(&user.ID, &user.Username, &user.Password); err != nil {
+		QueryRow("SELECT id, email, password FROM users WHERE email = ?", email).
+		Scan(&user.User_id, &user.Email, &user.Password); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return user, fmt.Errorf("user not found")
 		}
@@ -85,29 +68,21 @@ func (repository MySQL) GetByUsername(username string) (users.User, error) {
 	return user, nil
 }
 
-func (repository MySQL) Create(user users.User) (int64, error) {
-	result, err := repository.db.Exec("INSERT INTO users (username, password) VALUES (?, ?)", user.Username, user.Password)
+func (repository MySQL) CreateUser(user users.User) (int64, errores.ApiError) {
+	result, err := repository.db.Exec("INSERT INTO users (nombre, apellido, email, password, admin) VALUES (?, ?, ?, ?, ?)", user.Nombre, user.Apellido, user.Email, user.Password, user.Admin)
 	if err != nil {
-		return 0, fmt.Errorf("error creating user: %w", err)
+		return 0, errores.NewInternalServerApiError("error creating user", err)
 	}
 
 	id, err := result.LastInsertId()
 	if err != nil {
-		return 0, fmt.Errorf("error getting last insert id: %w", err)
+		return 0, errores.NewInternalServerApiError("error getting last insert id: %w", err)
 	}
 	return id, nil
 }
 
-func (repository MySQL) Update(user users.User) error {
-	if _, err := repository.db.Exec("UPDATE users SET username = ?, password = ? WHERE id = ?", user.Username, user.Password, user.ID); err != nil {
-		return fmt.Errorf("error updating user: %w", err)
-	}
-	return nil
-}
+// agregar login
 
-func (repository MySQL) Delete(id int64) error {
-	if _, err := repository.db.Exec("DELETE FROM users WHERE id = ?", id); err != nil {
-		return fmt.Errorf("error deleting user: %w", err)
-	}
-	return nil
+func (repository MySQL) Login(user users.User) errores.ApiError {
+
 }
