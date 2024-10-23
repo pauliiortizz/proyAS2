@@ -11,9 +11,8 @@ import (
 )
 
 type Repository interface {
-	GetUserById(id int64) (dao.User, errores.ApiError)
-	Login(loginDto domain.Login) (domain.TokenDto, errores.ApiError)
-	CreateUser(registro dao.User) (int64, errores.ApiError)
+	GetUserById(id int64) (dao.User, error)
+	CreateUser(registro dao.User) (int64, error)
 	GetUserByEmail(email string) (dao.User, error)
 }
 
@@ -37,7 +36,7 @@ func NewService(mainRepository, cacheRepository, memcachedRepository Repository,
 	}
 }
 
-func (service Service) GetUserById(id int64) (domain.User, errores.ApiError) {
+func (service Service) GetUserById(id int64) (domain.User, error) {
 	// Intentar obtener el usuario desde el repositorio de caché
 	user, err := service.cacheRepository.GetUserById(id)
 	if err != nil {
@@ -141,7 +140,7 @@ func Hash(input string) string {
 	return hex.EncodeToString(hash[:])
 }
 
-func (service Service) CreateUser(registro domain.User) (int64, errores.ApiError) {
+func (service Service) CreateUser(registro domain.User) (int64, error) {
 	// Hashear la contraseña
 	passwordHash := Hash(registro.Password)
 

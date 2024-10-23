@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/karlseguin/ccache"
 	"time"
-	"users/dao_users"
+	dao "users/dao_users"
 )
 
 type CacheConfig struct {
@@ -32,24 +32,24 @@ func NewCache(config CacheConfig) Cache {
 	}
 }
 
-func (repository Cache) GetUserById(id string) (users.User, error) {
+func (repository Cache) GetUserById(id int64) (dao.User, error) {
 	key := fmt.Sprintf(keyFormat, id)
 	item := repository.client.Get(key)
 	fmt.Println(key)
 	if item == nil {
-		return users.User{}, fmt.Errorf("not found item with key %s", key)
+		return dao.User{}, fmt.Errorf("not found item with key %s", key)
 	}
 	if item.Expired() {
-		return users.User{}, fmt.Errorf("item with key %s is expired", key)
+		return dao.User{}, fmt.Errorf("item with key %s is expired", key)
 	}
-	userDAO, ok := item.Value().(users.User)
+	userDAO, ok := item.Value().(dao.User)
 	if !ok {
-		return users.User{}, fmt.Errorf("error converting item with key %s", key)
+		return dao.User{}, fmt.Errorf("error converting item with key %s", key)
 	}
 	return userDAO, nil
 }
 
-func (repository Cache) GetUserByEmail(email string) (users.User, error) {
+func (repository Cache) GetUserByEmail(email string) (dao.User, error) {
 	// Use username as cache key
 	userKey := fmt.Sprintf("user:username:%s", email)
 
@@ -57,18 +57,18 @@ func (repository Cache) GetUserByEmail(email string) (users.User, error) {
 	item := repository.client.Get(userKey)
 	if item != nil && !item.Expired() {
 		// Return cached value
-		user, ok := item.Value().(users.User)
+		user, ok := item.Value().(dao.User)
 		if !ok {
-			return users.User{}, fmt.Errorf("failed to cast cached value to user")
+			return dao.User{}, fmt.Errorf("failed to cast cached value to user")
 		}
 		return user, nil
 	}
 
 	// If not found, return cache miss error
-	return users.User{}, fmt.Errorf("cache miss for username %s", email)
+	return dao.User{}, fmt.Errorf("cache miss for username %s", email)
 }
 
-func (repository Cache) CreateUser(user users.User) (int64, error) {
+func (repository Cache) CreateUser(user dao.User) (int64, error) {
 	key := fmt.Sprintf(keyFormat, user.User_id)
 	fmt.Println("saving with duration", repository.ttl)
 	repository.client.Set(key, user, repository.ttl)

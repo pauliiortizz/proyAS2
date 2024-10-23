@@ -52,7 +52,7 @@ func (repository Memcached) GetUserById(id int64) (users.User, error) {
 	return user, nil
 }
 
-func (repository Memcached) GetByEmail(email string) (users.User, error) {
+func (repository Memcached) GetUserByEmail(email string) (users.User, error) {
 	// Assume we store users with "email:<email>" as key
 	key := emailKey(email)
 	item, err := repository.client.Get(key)

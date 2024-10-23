@@ -6,13 +6,12 @@ import (
 	"net/http"
 	"strconv"
 	domain "users/domain_users"
-	errores "users/extras"
 )
 
 type Service interface {
-	GetUserById(id int64) (domain.User, errores.ApiError)
-	Login(email string, password string) (domain.LoginResponse, errores.ApiError)
-	CreateUser(user domain.User) (domain.LoginResponse, errores.ApiError)
+	GetUserById(id int64) (domain.User, error)
+	Login(email string, password string) (domain.LoginResponse, error)
+	CreateUser(user domain.User) (int64, error)
 }
 
 type Controller struct {

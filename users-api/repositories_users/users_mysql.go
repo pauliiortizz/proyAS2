@@ -68,7 +68,7 @@ func (repository MySQL) GetUserByEmail(email string) (users.User, error) {
 	return user, nil
 }
 
-func (repository MySQL) CreateUser(user users.User) (int64, errores.ApiError) {
+func (repository MySQL) CreateUser(user users.User) (int64, error) {
 	result, err := repository.db.Exec("INSERT INTO users (nombre, apellido, email, password, admin) VALUES (?, ?, ?, ?, ?)", user.Nombre, user.Apellido, user.Email, user.Password, user.Admin)
 	if err != nil {
 		return 0, errores.NewInternalServerApiError("error creating user", err)
@@ -79,10 +79,4 @@ func (repository MySQL) CreateUser(user users.User) (int64, errores.ApiError) {
 		return 0, errores.NewInternalServerApiError("error getting last insert id: %w", err)
 	}
 	return id, nil
-}
-
-// agregar login
-
-func (repository MySQL) Login(user users.User) errores.ApiError {
-
 }
