@@ -45,7 +45,7 @@ func NewMySQL(config MySQLConfig) MySQL {
 func (repository MySQL) GetUserById(id int64) (users.User, error) {
 	var user users.User
 	if err := repository.db.
-		QueryRow("SELECT id, email, password, nombre, apellido, admin FROM users WHERE id = ?", id).
+		QueryRow("SELECT user_id, email, password, nombre, apellido, admin FROM users WHERE user_id = ?", id).
 		Scan(&user.User_id, &user.Email, &user.Password, &user.Nombre, &user.Apellido, &user.Admin); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return user, fmt.Errorf("user not found")
@@ -58,7 +58,7 @@ func (repository MySQL) GetUserById(id int64) (users.User, error) {
 func (repository MySQL) GetUserByEmail(email string) (users.User, error) {
 	var user users.User
 	if err := repository.db.
-		QueryRow("SELECT id, email, password FROM users WHERE email = ?", email).
+		QueryRow("SELECT user_id, email, password FROM users WHERE email = ?", email).
 		Scan(&user.User_id, &user.Email, &user.Password); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return user, fmt.Errorf("user not found")

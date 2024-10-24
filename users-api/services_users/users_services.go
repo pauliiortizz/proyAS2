@@ -103,7 +103,7 @@ func (service Service) Login(email string, password string) (domain.LoginRespons
 
 			user, err = service.mainRepository.GetUserByEmail(email)
 			if err != nil {
-				return domain.LoginResponse{}, fmt.Errorf("error getting user by username from main repository: %w", err)
+				return domain.LoginResponse{}, fmt.Errorf("error getting user by email from main repository: %w", err)
 			}
 
 			if _, err := service.cacheRepository.CreateUser(user); err != nil {
