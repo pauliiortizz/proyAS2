@@ -58,12 +58,12 @@ func (repository MySQL) GetUserById(id int64) (users.User, error) {
 func (repository MySQL) GetUserByEmail(email string) (users.User, error) {
 	var user users.User
 	if err := repository.db.
-		QueryRow("SELECT user_id, email, password FROM users WHERE email = ?", email).
-		Scan(&user.User_id, &user.Email, &user.Password); err != nil {
+		QueryRow("SELECT user_id, email, password, admin FROM users WHERE email = ?", email).
+		Scan(&user.User_id, &user.Email, &user.Password, &user.Admin); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return user, fmt.Errorf("user not found")
 		}
-		return user, fmt.Errorf("error fetching user by username: %w", err)
+		return user, fmt.Errorf("error fetching user by email: %w", err)
 	}
 	return user, nil
 }
