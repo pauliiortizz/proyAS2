@@ -3,7 +3,7 @@ package domain_cursos
 import "time"
 
 type CourseDto struct {
-	Course_id    int       `json:"course_id"`
+	Course_id    string    `json:"course_id"`
 	Nombre       string    `json:"nombre"`
 	Profesor_id  int       `json:"profesor_id"`
 	Categoria    string    `json:"categoria"`
@@ -16,3 +16,8 @@ type CourseDto struct {
 }
 
 type CoursesDto []CourseDto
+
+type CourseNew struct {
+	Operation string `json:"operation"`
+	Course_id string `json:"course_id"`
+}

@@ -3,7 +3,7 @@ package dao_cursos
 import "time"
 
 type Curso struct {
-	Course_id    int       `bson:"course_id"`
+	Course_id    string    `bson:"course_id"`
 	Nombre       string    `bson:"nombre"`
 	Profesor_id  int       `bson:"profesor_id"`
 	Categoria    string    `bson:"categoria"`
