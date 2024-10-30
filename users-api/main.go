@@ -55,7 +55,7 @@ func main() {
 	// URL mappings
 
 	router.GET("/users/:id", controller.GetUserById)
-	router.POST("/users", controller.CreateUser)
+	router.POST("/createUser", controller.CreateUser)
 	router.POST("/login", controller.Login)
 
 	// Run application

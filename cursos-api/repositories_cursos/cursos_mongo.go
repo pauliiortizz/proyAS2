@@ -52,7 +52,7 @@ func NewMongo(config MongoConfig) Mongo {
 	}
 }
 
-func (repository Mongo) GetCursoByID(ctx context.Context, id string) (cursosDAO.Curso, error) {
+func (repository Mongo) GetCourseByID(ctx context.Context, id string) (cursosDAO.Curso, error) {
 	// Get from MongoDB
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -71,8 +71,8 @@ func (repository Mongo) GetCursoByID(ctx context.Context, id string) (cursosDAO.
 	return cursoDAO, nil
 }
 
-func (repository Mongo) Create(ctx context.Context, hotel cursosDAO.Curso) (string, error) {
-	result, err := repository.client.Database(repository.database).Collection(repository.collection).InsertOne(ctx, hotel)
+func (repository Mongo) Create(ctx context.Context, curso cursosDAO.Curso) (string, error) {
+	result, err := repository.client.Database(repository.database).Collection(repository.collection).InsertOne(ctx, curso)
 	if err != nil {
 		return "", fmt.Errorf("error creating document: %w", err)
 	}
@@ -81,4 +81,48 @@ func (repository Mongo) Create(ctx context.Context, hotel cursosDAO.Curso) (stri
 		return "", fmt.Errorf("error converting mongo ID to object ID")
 	}
 	return objectID.Hex(), nil
+}
+
+func (repository Mongo) Update(ctx context.Context, curso cursosDAO.Curso) error {
+	// Convert curso ID to MongoDB ObjectID
+	objectID, err := primitive.ObjectIDFromHex(curso.Course_id)
+	if err != nil {
+		return fmt.Errorf("error converting id to mongo ID: %w", err)
+	}
+
+	// Create an update document
+	update := bson.M{}
+
+	// Only set the fields that are not empty or their default value
+	if curso.Descripcion != "" {
+		update["Descripcion"] = curso.Descripcion
+	}
+	if curso.Nombre != "" {
+		update["Nombre"] = curso.Nombre
+	}
+	if curso.Categoria != "" {
+		update["Categoria"] = curso.Categoria
+	}
+	if curso.Requisitos != "" {
+		update["Requisitos"] = curso.Requisitos
+	}
+	if curso.Valoracion != 0 { // Assuming 0 is the default for Valoracion
+		update["Valoracion"] = curso.Valoracion
+	}
+
+	// Update the document in MongoDB
+	if len(update) == 0 {
+		return fmt.Errorf("no fields to update for curso ID %s", curso.Course_id)
+	}
+
+	filter := bson.M{"_id": objectID}
+	result, err := repository.client.Database(repository.database).Collection(repository.collection).UpdateOne(ctx, filter, bson.M{"$set": update})
+	if err != nil {
+		return fmt.Errorf("error updating document: %w", err)
+	}
+	if result.MatchedCount == 0 {
+		return fmt.Errorf("no document found with ID %s", curso.Course_id)
+	}
+
+	return nil
 }

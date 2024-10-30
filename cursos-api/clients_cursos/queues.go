@@ -1,7 +1,7 @@
 package clients_cursos
 
 import (
-	"cursos/domain_cursos"
+	cursosDomain "cursos/domain_cursos"
 	"encoding/json"
 	"fmt"
 	"github.com/streadway/amqp"
@@ -39,7 +39,7 @@ func NewRabbit(config RabbitConfig) Rabbit {
 	}
 }
 
-func (queue Rabbit) Publish(cursoNuevo domain_cursos.CourseDto) error {
+func (queue Rabbit) Publish(cursoNuevo cursosDomain.CourseNew) error {
 	bytes, err := json.Marshal(cursoNuevo)
 	if err != nil {
 		return fmt.Errorf("error marshaling Rabbit hotelNew: %w", err)
