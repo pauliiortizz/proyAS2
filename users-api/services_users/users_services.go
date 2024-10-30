@@ -109,14 +109,18 @@ func (service Service) Login(email string, password string) (domain.LoginRespons
 			if _, err := service.cacheRepository.CreateUser(user); err != nil {
 				fmt.Println(fmt.Sprintf("warning: error caching user in cache repository: %s", err.Error()))
 			}
+
 			if _, err := service.memcachedRepository.CreateUser(user); err != nil {
 				fmt.Println(fmt.Sprintf("warning: error caching user in memcached repository: %s", err.Error()))
 			}
 		} else {
+			fmt.Println("Guardando en cache local", user)
 			if _, err := service.cacheRepository.CreateUser(user); err != nil {
 				fmt.Println(fmt.Sprintf("warning: error caching user in cache repository: %s", err.Error()))
 			}
 		}
+	} else {
+		fmt.Println("User found in cache", user)
 	}
 
 	if user.Password != passwordHash {

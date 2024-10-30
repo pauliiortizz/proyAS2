@@ -14,7 +14,8 @@ type CacheConfig struct {
 }
 
 const (
-	keyFormat = "user:%s"
+	keyByID    = "user_id:%d"
+	keyByEmail = "user_email:%s"
 )
 
 type Cache struct {
@@ -33,7 +34,7 @@ func NewCache(config CacheConfig) Cache {
 }
 
 func (repository Cache) GetUserById(id int64) (dao.User, error) {
-	key := fmt.Sprintf(keyFormat, id)
+	key := fmt.Sprintf(keyByID, id)
 	item := repository.client.Get(key)
 	fmt.Println(key)
 	if item == nil {
@@ -50,8 +51,10 @@ func (repository Cache) GetUserById(id int64) (dao.User, error) {
 }
 
 func (repository Cache) GetUserByEmail(email string) (dao.User, error) {
+	fmt.Println("Buscando", email)
+
 	// Use username as cache key
-	userKey := fmt.Sprintf("user:email:%s", email)
+	userKey := fmt.Sprintf(keyByEmail, email)
 
 	// Try to get from cache
 	item := repository.client.Get(userKey)
@@ -69,9 +72,13 @@ func (repository Cache) GetUserByEmail(email string) (dao.User, error) {
 }
 
 func (repository Cache) CreateUser(user dao.User) (int64, error) {
-	key := fmt.Sprintf(keyFormat, user.User_id)
+	keyByID := fmt.Sprintf(keyByID, user.User_id)
+	keyByEmail := fmt.Sprintf(keyByEmail, user.Email)
+	fmt.Println("Guardando", keyByID)
+	fmt.Println("Guardando", keyByEmail)
 	fmt.Println("saving with duration", repository.ttl)
-	repository.client.Set(key, user, repository.ttl)
+	repository.client.Set(keyByID, user, repository.ttl)
+	repository.client.Set(keyByEmail, user, repository.ttl)
 	return user.User_id, nil
 }
 
