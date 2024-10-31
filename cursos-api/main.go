@@ -12,12 +12,12 @@ import (
 func main() {
 	// Mongo
 	mainRepository := repositories.NewMongo(repositories.MongoConfig{
-		Host:       "mongo",
+		Host:       "localhost",
 		Port:       "27017",
 		Username:   "root",
-		Password:   "Belgrano1905", //root -> pauli, marga
-		Database:   "cursos",
-		Collection: "cursos",
+		Password:   "root", //root -> pauli, marga
+		Database:   "courses",
+		Collection: "courses",
 	})
 
 	// Rabbit
@@ -25,7 +25,7 @@ func main() {
 		Host:      "localhost",
 		Port:      "5672",
 		Username:  "user",
-		Password:  "password",
+		Password:  "root",
 		QueueName: "courses-queue",
 	})
 
@@ -39,8 +39,7 @@ func main() {
 	router := gin.Default()
 	router.GET("/courses/:id", controller.GetCourseByID)
 	router.POST("/createCourse", controller.Create)
-	//router.PUT("/edit/:course_id", controller.Update)
-	//router.DELETE("/hotels/:id", controller.Delete)
+	router.PUT("/edit/:course_id", controller.Update)
 	if err := router.Run(":8081"); err != nil {
 		log.Fatalf("error running application: %w", err)
 	}

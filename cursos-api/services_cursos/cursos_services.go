@@ -7,10 +7,14 @@ import (
 	"fmt"
 )
 
+// Cannot use 'mainRepository' (type Mongo) as the type RepositoryType does not
+// implement 'Repository' as some methods are missing:
+// GetCourseByID(ctx context.Context, id string) (cursosDAO.Curso, error)
+// Update(ctx context.Context, curso cursosDAO.Curso) error
 type Repository interface {
 	GetCourseByID(ctx context.Context, id string) (cursosDAO.Curso, error)
 	Create(ctx context.Context, curso cursosDAO.Curso) (string, error)
-	//Update(ctx context.Context, curso cursosDAO.Curso) error
+	Update(ctx context.Context, curso cursosDAO.Curso) error
 	//Delete(ctx context.Context, id string) error
 }
 
@@ -43,24 +47,31 @@ func (service Service) GetCourseByID(ctx context.Context, id string) (cursosDoma
 
 	// Convert DAO to DTO
 	return cursosDomain.CourseDto{
-		Course_id:   cursosDAO.Course_id,
-		Nombre:      cursosDAO.Nombre,
-		Categoria:   cursosDAO.Categoria,
-		Descripcion: cursosDAO.Descripcion,
-		Valoracion:  cursosDAO.Valoracion,
-		Duracion:    cursosDAO.Duracion,
-		Requisitos:  cursosDAO.Requisitos,
+		Course_id:    cursosDAO.Course_id,
+		Nombre:       cursosDAO.Nombre,
+		Profesor_id:  cursosDAO.Profesor_id,
+		Categoria:    cursosDAO.Categoria,
+		Descripcion:  cursosDAO.Descripcion,
+		Valoracion:   cursosDAO.Valoracion,
+		Duracion:     cursosDAO.Duracion,
+		Requisitos:   cursosDAO.Requisitos,
+		Url_image:    cursosDAO.Url_image,
+		Fecha_inicio: cursosDAO.Fecha_inicio,
 	}, nil
 }
 
 func (service Service) Create(ctx context.Context, curso cursosDomain.CourseDto) (string, error) {
 	record := cursosDAO.Curso{
-		Course_id:   curso.Course_id,
-		Categoria:   curso.Categoria,
-		Descripcion: curso.Descripcion,
-		Valoracion:  curso.Valoracion,
-		Duracion:    curso.Duracion,
-		Requisitos:  curso.Requisitos,
+		Course_id:    curso.Course_id,
+		Nombre:       curso.Nombre,
+		Profesor_id:  curso.Profesor_id,
+		Categoria:    curso.Categoria,
+		Descripcion:  curso.Descripcion,
+		Valoracion:   curso.Valoracion,
+		Duracion:     curso.Duracion,
+		Requisitos:   curso.Requisitos,
+		Url_image:    curso.Url_image,
+		Fecha_inicio: curso.Fecha_inicio,
 	}
 	id, err := service.mainRepository.Create(ctx, record)
 	if err != nil {
@@ -68,7 +79,7 @@ func (service Service) Create(ctx context.Context, curso cursosDomain.CourseDto)
 	}
 	if err := service.eventsQueue.Publish(cursosDomain.CourseNew{
 		Operation: "CREATE",
-		Course_id: curso.Course_id,
+		Course_id: id,
 	}); err != nil {
 		return "", fmt.Errorf("error publishing curso new: %w", err)
 	}
@@ -77,16 +88,20 @@ func (service Service) Create(ctx context.Context, curso cursosDomain.CourseDto)
 }
 
 // Update(ctx context.Context, curso cursosDAO.Curso) error
-/*
+
 func (service Service) Update(ctx context.Context, curso cursosDomain.CourseDto) error {
 	// Convert domain model to DAO model
 	record := cursosDAO.Curso{
-		Course_id:   curso.Course_id,
-		Categoria:   curso.Categoria,
-		Descripcion: curso.Descripcion,
-		Valoracion:  curso.Valoracion,
-		Duracion:    curso.Duracion,
-		Requisitos:  curso.Requisitos,
+		Course_id:    curso.Course_id,
+		Nombre:       curso.Nombre,
+		Profesor_id:  curso.Profesor_id,
+		Categoria:    curso.Categoria,
+		Descripcion:  curso.Descripcion,
+		Valoracion:   curso.Valoracion,
+		Duracion:     curso.Duracion,
+		Requisitos:   curso.Requisitos,
+		Url_image:    curso.Url_image,
+		Fecha_inicio: curso.Fecha_inicio,
 	}
 
 	// Update the curso in the main repository
@@ -104,4 +119,4 @@ func (service Service) Update(ctx context.Context, curso cursosDomain.CourseDto)
 	}
 
 	return nil
-}*/
+}
