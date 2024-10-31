@@ -12,7 +12,7 @@ import (
 type Service interface {
 	GetCourseByID(ctx context.Context, id string) (cursosDomain.CourseDto, error)
 	Create(ctx context.Context, curso cursosDomain.CourseDto) (string, error)
-	Update(ctx context.Context, curso cursosDomain.CourseDto) error
+	//Update(ctx context.Context, curso cursosDomain.CourseDto) error
 	//Delete(ctx context.Context, id string) error
 }
 
@@ -34,7 +34,7 @@ func (controller Controller) GetCourseByID(ctx *gin.Context) {
 	curso, err := controller.service.GetCourseByID(ctx.Request.Context(), cursoID)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{
-			"error": fmt.Sprintf("error getting hotel: %s", err.Error()),
+			"error": fmt.Sprintf("error getting course: %s", err.Error()),
 		})
 		return
 	}
@@ -57,7 +57,7 @@ func (controller Controller) Create(ctx *gin.Context) {
 	id, err := controller.service.Create(ctx.Request.Context(), curso)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": fmt.Sprintf("error creating hotel: %s", err.Error()),
+			"error": fmt.Sprintf("error creating course: %s", err.Error()),
 		})
 		return
 	}
@@ -68,6 +68,7 @@ func (controller Controller) Create(ctx *gin.Context) {
 	})
 }
 
+/*
 func (controller Controller) Update(ctx *gin.Context) {
 	// Validate ID param
 	id := strings.TrimSpace(ctx.Param("id"))
@@ -87,7 +88,7 @@ func (controller Controller) Update(ctx *gin.Context) {
 	// Update hotel
 	if err := controller.service.Update(ctx.Request.Context(), curso); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": fmt.Sprintf("error updating hotel: %s", err.Error()),
+			"error": fmt.Sprintf("error updating course: %s", err.Error()),
 		})
 		return
 	}
@@ -96,7 +97,7 @@ func (controller Controller) Update(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": id,
 	})
-}
+}*/
 
 /*
 func (controller Controller) Delete(ctx *gin.Context) {
