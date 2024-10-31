@@ -53,17 +53,17 @@ func NewMongo(config MongoConfig) Mongo {
 }
 
 func (repository Mongo) GetCourseByID(ctx context.Context, id string) (cursosDAO.Curso, error) {
-	// Get from MongoDB
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return cursosDAO.Curso{}, fmt.Errorf("error converting id to mongo ID: %w", err)
-	}
-	result := repository.client.Database(repository.database).Collection(repository.collection).FindOne(ctx, bson.M{"_id": objectID})
-	if result.Err() != nil {
-		return cursosDAO.Curso{}, fmt.Errorf("error finding document: %w", result.Err())
+		return cursosDAO.Curso{}, fmt.Errorf("invalid ID format: %w", err)
 	}
 
-	// Convert document to DAO
+	// Realizar la consulta en MongoDB usando el ObjectID
+	result := repository.client.Database(repository.database).Collection(repository.collection).FindOne(ctx, bson.M{"_id": objectID})
+	if result.Err() != nil {
+		return cursosDAO.Curso{}, fmt.Errorf("course not found: %w", result.Err())
+	}
+
 	var cursoDAO cursosDAO.Curso
 	if err := result.Decode(&cursoDAO); err != nil {
 		return cursosDAO.Curso{}, fmt.Errorf("error decoding result: %w", err)
@@ -83,9 +83,9 @@ func (repository Mongo) Create(ctx context.Context, curso cursosDAO.Curso) (stri
 	return objectID.Hex(), nil
 }
 
-func (repository Mongo) Update(ctx context.Context, curso cursosDAO.Curso) error {
+/*func (repository Mongo) Update(ctx context.Context, curso cursosDAO.Curso) error {
 	// Convert curso ID to MongoDB ObjectID
-	objectID, err := primitive.ObjectIDFromHex(curso.Course_id)
+	//objectID, err := curso.Course_id, err
 	if err != nil {
 		return fmt.Errorf("error converting id to mongo ID: %w", err)
 	}
@@ -125,4 +125,4 @@ func (repository Mongo) Update(ctx context.Context, curso cursosDAO.Curso) error
 	}
 
 	return nil
-}
+}*/

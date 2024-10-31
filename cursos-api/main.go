@@ -15,9 +15,9 @@ func main() {
 		Host:       "mongo",
 		Port:       "27017",
 		Username:   "root",
-		Password:   "root",
-		Database:   "courses",
-		Collection: "courses",
+		Password:   "Belgrano1905", //root -> pauli, marga
+		Database:   "cursos",
+		Collection: "cursos",
 	})
 
 	// Rabbit
@@ -25,7 +25,7 @@ func main() {
 		Host:      "localhost",
 		Port:      "5672",
 		Username:  "user",
-		Password:  "root",
+		Password:  "password",
 		QueueName: "courses-queue",
 	})
 
@@ -39,7 +39,7 @@ func main() {
 	router := gin.Default()
 	router.GET("/courses/:id", controller.GetCourseByID)
 	router.POST("/createCourse", controller.Create)
-	router.PUT("/edit/:course_id", controller.Update)
+	//router.PUT("/edit/:course_id", controller.Update)
 	//router.DELETE("/hotels/:id", controller.Delete)
 	if err := router.Run(":8081"); err != nil {
 		log.Fatalf("error running application: %w", err)
