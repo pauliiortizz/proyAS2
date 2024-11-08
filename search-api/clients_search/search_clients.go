@@ -1,48 +1,81 @@
-package clients_search
+package queues
 
 import (
-	//"search-api/clients_search"
-	"search/dao_search"
-	//"fmt"
-	log "github.com/sirupsen/logrus"
+	"encoding/json"
+	"fmt"
+	"github.com/streadway/amqp"
+	"log"
+	"search/domain_search"
 )
 
-type coursesClient struct{}
-
-type CoursesClientInterface interface {
-	GetCourseById(id int) dao_search.Search
-	GetCourses() dao_search.Searchs
-	GetCourseByName(query string) dao_search.Searchs
+type RabbitConfig struct {
+	Host      string
+	Port      string
+	Username  string
+	Password  string
+	QueueName string
 }
 
-var (
-	CoursesClient CoursesClientInterface
-)
-
-func init() {
-	CoursesClient = &coursesClient{}
+type Rabbit struct {
+	connection *amqp.Connection
+	channel    *amqp.Channel
+	queue      amqp.Queue
 }
 
-func (s *coursesClient) GetCourseById(id int) dao_search.Search {
-	var course dao_search.Search
-	clients.Db.Where("course_id = ?", id).First(&course) //adaptar
-	log.Debug("Course: ", course)
-	return course
+// NewRabbit creates a new RabbitMQ connection and declares the queue
+func NewRabbit(config RabbitConfig) Rabbit {
+	connection, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%s/", config.Username, config.Password, config.Host, config.Port))
+	if err != nil {
+		log.Fatalf("error getting Rabbit connection: %w", err)
+	}
+	channel, err := connection.Channel()
+	if err != nil {
+		log.Fatalf("error creating Rabbit channel: %w", err)
+	}
+	queue, err := channel.QueueDeclare(config.QueueName, false, false, false, false, nil)
+	return Rabbit{
+		connection: connection,
+		channel:    channel,
+		queue:      queue,
+	}
 }
 
-func (s *coursesClient) GetCourses() dao_search.Searchs {
-	var courses dao_search.Searchs
-	clients.Db.Find(&courses) //adaptar
+// StartConsumer starts listening for messages on the RabbitMQ queue
+func (queue Rabbit) StartConsumer(handler func(domain_search.CourseNew)) error {
+	messages, err := queue.channel.Consume(
+		queue.queue.Name,
+		"",
+		true, // Auto-acknowledge messages
+		false,
+		false,
+		false,
+		nil,
+	)
+	if err != nil {
+		return fmt.Errorf("error registering cousrse: %w", err)
+	}
 
-	log.Debug("Courses: ", courses)
+	go func() {
+		for msg := range messages {
+			var courseUpdate domain_search.CourseNew
+			if err := json.Unmarshal(msg.Body, &courseUpdate); err != nil {
+				log.Printf("error unmarshaling message: %v", err)
+				continue
+			}
 
-	return courses
+			handler(courseUpdate)
+		}
+	}()
+
+	return nil
 }
 
-func (s *coursesClient) GetCourseByName(query string) dao_search.Searchs {
-	var courses dao_search.Searchs
-	clients.Db.Where("nombre LIKE ?", "%"+query+"%").Find(&courses) //adaptar
-	log.Debug("Courses", courses)
-
-	return courses
+// Close cleans up the RabbitMQ resources
+func (queue Rabbit) Close() {
+	if err := queue.channel.Close(); err != nil {
+		log.Printf("error closing Rabbit channel: %v", err)
+	}
+	if err := queue.connection.Close(); err != nil {
+		log.Printf("error closing Rabbit connection: %v", err)
+	}
 }
