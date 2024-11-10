@@ -3,13 +3,13 @@ package config
 import "time"
 
 const (
-	MySQLHost     = "localhost"
-	MySQLPort     = "3306"
+	MySQLHost     = "mysql"
+	MySQLPort     = "3307"
 	MySQLDatabase = "users-api"
 	MySQLUsername = "root"
-	MySQLPassword = "root"
+	MySQLPassword = "margoch"
 	CacheDuration = 30 * time.Second
-	MemcachedHost = "localhost"
+	MemcachedHost = "memcached"
 	MemcachedPort = "11211"
 	JWTKey        = "ThisIsAnExampleJWTKey!"
 	JWTDuration   = 24 * time.Hour

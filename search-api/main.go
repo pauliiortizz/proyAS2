@@ -12,9 +12,9 @@ import (
 func main() {
 	// Solr
 	solrRepo := repositories.NewSolr(repositories.SolrConfig{
-		Host:       "solr",   // Solr host
-		Port:       "8983",   // Solr port
-		Collection: "hotels", // Collection name
+		Host:       "solr",    // Solr host
+		Port:       "8983",    // Solr port
+		Collection: "courses", // Collection name
 	})
 
 	// Rabbit
@@ -26,7 +26,7 @@ func main() {
 		QueueName: "courses-news",
 	})
 
-	// Hotels API
+	// courses API
 	cursosAPI := repositories.NewHTTP(repositories.HTTPConfig{
 		Host: "cursos-api",
 		Port: "8081",

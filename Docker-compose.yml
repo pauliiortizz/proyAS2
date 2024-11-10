@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql-container
+    ports:
+      - "3307:3307"
+    environment:
+      MYSQL_ROOT_PASSWORD: margoch
+      MYSQL_DATABASE: users-api
+      MYSQL_PASSWORD: margoch
+    networks:
+      - app-network
+
+  memcached:
+    image: memcached:latest
+    container_name: memcached-container
+    ports:
+      - "11211:11211"
+    networks:
+      - app-network
+
+  mongo:
+    image: mongo:4.4.6
+    container_name: mongo-container
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    networks:
+      - app-network
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbit-container
+    ports:
+      - "5671:5671"
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: root
+    networks:
+      - app-network
+
+  users-api:
+    image: users-api:latest
+    container_name: users-api-container
+    build:
+      context: ./users-api
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    command: /bin/sh -c "sleep 30 && go run main.go"
+    depends_on:
+      - memcached
+      - mysql
+    networks:
+      - app-network
+
+  cursos-api:
+    image: cursos-api:latest
+    container_name: cursos-api-container
+    build:
+      context: .proyAS2/cursos-api
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    command: /bin/sh -c "sleep 50 && go run main.go"
+    depends_on:
+      - mongo
+      - rabbitmq
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

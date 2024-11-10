@@ -12,17 +12,17 @@ import (
 func main() {
 	// Mongo
 	mainRepository := repositories.NewMongo(repositories.MongoConfig{
-		Host:       "localhost",
+		Host:       "mongo",
 		Port:       "27017",
 		Username:   "root",
 		Password:   "root", //root -> pauli, marga
-		Database:   "courses",
+		Database:   "courses-api",
 		Collection: "courses",
 	})
 
 	// Rabbit
 	eventsQueue := queues.NewRabbit(queues.RabbitConfig{
-		Host:      "localhost",
+		Host:      "rabbitmq",
 		Port:      "5672",
 		Username:  "user",
 		Password:  "root",

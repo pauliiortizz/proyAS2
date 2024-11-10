@@ -10,7 +10,6 @@ import (
 type Repository interface {
 	Index(ctx context.Context, curso cursosDAO.Search) (string, error)
 	Update(ctx context.Context, curso cursosDAO.Search) error
-	Delete(ctx context.Context, id string) error
 	Search(ctx context.Context, query string, limit int, offset int) ([]cursosDAO.Search, error) // Updated signature
 }
 
@@ -93,14 +92,6 @@ func (service Service) HandleCourseNew(cursoNew cursosDomain.CourseNew) {
 			} else {
 				fmt.Println("Course updated successfully:", cursoNew.Curso_id)
 			}
-		}
-
-	case "DELETE":
-		// Call Delete method directly since no course details are needed
-		if err := service.repository.Delete(context.Background(), cursoNew.Curso_id); err != nil {
-			fmt.Printf("Error deleting course (%s): %v\n", cursoNew.Curso_id, err)
-		} else {
-			fmt.Println("Course deleted successfully:", cursoNew.Curso_id)
 		}
 
 	default:
