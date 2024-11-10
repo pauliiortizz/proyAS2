@@ -101,6 +101,22 @@ services:
     networks:
       - app-network
 
+
+  inscripcion-api:
+    image: inscripciones-api:lastet
+    container_name: inscripciones-api-container
+    build:
+      context: ./inscripciones-api
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    command: /bin/sh -c "sleep 30 && go run main.go"
+    depends_on:
+      - mysql
+    networks:
+      -app-network:
+
+
 networks:
   app-network:
     driver: bridge
