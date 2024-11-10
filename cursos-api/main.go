@@ -39,7 +39,7 @@ func main() {
 	router := gin.Default()
 	router.GET("/courses/:id", controller.GetCourseByID)
 	router.POST("/createCourse", controller.Create)
-	router.PUT("/edit/:course_id", controller.Update)
+	router.PUT("/edit/:id", controller.Update)
 	if err := router.Run(":8081"); err != nil {
 		log.Fatalf("error running application: %w", err)
 	}

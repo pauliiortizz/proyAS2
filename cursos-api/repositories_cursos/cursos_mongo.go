@@ -86,6 +86,7 @@ func (repository Mongo) Create(ctx context.Context, curso cursosDAO.Curso) (stri
 func (repository Mongo) Update(ctx context.Context, curso cursosDAO.Curso) error {
 	// Convert curso ID to MongoDB ObjectID
 	objectID, err := primitive.ObjectIDFromHex(curso.Course_id)
+	println(curso.Course_id)
 	if err != nil {
 		return fmt.Errorf("error converting id to mongo ID: %w", err)
 	}
@@ -94,22 +95,30 @@ func (repository Mongo) Update(ctx context.Context, curso cursosDAO.Curso) error
 	update := bson.M{}
 
 	// Only set the fields that are not empty or their default value
-	if curso.Descripcion != "" {
-		update["Descripcion"] = curso.Descripcion
-	}
 	if curso.Nombre != "" {
-		update["Nombre"] = curso.Nombre
+		update["nombre"] = curso.Nombre
 	}
 	if curso.Categoria != "" {
-		update["Categoria"] = curso.Categoria
+		update["categoria"] = curso.Categoria
 	}
-	if curso.Requisitos != "" {
-		update["Requisitos"] = curso.Requisitos
+	if curso.Descripcion != "" {
+		update["descripcion"] = curso.Descripcion
 	}
 	if curso.Valoracion != 0 { // Assuming 0 is the default for Valoracion
-		update["Valoracion"] = curso.Valoracion
+		update["valoracion"] = curso.Valoracion
 	}
-
+	if curso.Duracion != 0 {
+		update["duracion"] = curso.Duracion
+	}
+	if curso.Requisitos != "" {
+		update["requisitos"] = curso.Requisitos
+	}
+	if curso.Url_image != "" {
+		update["url_image"] = curso.Url_image
+	}
+	if !curso.Fecha_inicio.IsZero() {
+		update["fecha_inicio"] = curso.Fecha_inicio
+	}
 	// Update the document in MongoDB
 	if len(update) == 0 {
 		return fmt.Errorf("no fields to update for curso ID %s", curso.Course_id)
