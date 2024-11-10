@@ -2,49 +2,37 @@ package clients_inscripcion
 
 import (
 	log "github.com/sirupsen/logrus"
-	//"inscripciones-api/clients_inscripcion"
+	"gorm.io/gorm"
 	"inscripciones/dao_inscripcion"
 )
 
-type inscripcionClient struct{}
+var Db *gorm.DB
 
-type InscripcionClientInterface interface {
-	InsertInscr(inscripcion dao_inscripcion.Inscripcion) (dao_inscripcion.Inscripcion, error)
-	GetInscripcion() dao_inscripcion.Inscripciones
-	GetCourseByUserId(id int) dao_inscripcion.Inscripciones
-}
+func InsertInscripcion(inscripcion dao_inscripcion.Inscripcion) dao_inscripcion.Inscripcion {
+	result := Db.Create(&inscripcion)
 
-var (
-	InscripcionClient InscripcionClientInterface
-)
-
-func init() {
-	InscripcionClient = &inscripcionClient{}
-}
-
-func (s *inscripcionClient) InsertInscr(inscripcion dao_inscripcion.Inscripcion) (dao_inscripcion.Inscripcion, error) {
-	result := clients.Db.Create(&inscripcion) //adaptar
 	if result.Error != nil {
-		log.Error("Error al crear la inscripción: ", result.Error)
-		return inscripcion, result.Error
+		log.Error("")
 	}
-
-	log.Debug("Inscripcion creada: ", inscripcion.Id_inscripcion)
-	return inscripcion, nil
+	log.Debug("Inscripcion Creada: ", inscripcion.Id_inscripcion)
+	return inscripcion
 }
 
-func (s *inscripcionClient) GetInscripcion() dao_inscripcion.Inscripciones {
+func GetInscripcionByCourse(idMongo string) dao_inscripcion.Inscripciones {
 	var inscripciones dao_inscripcion.Inscripciones
-	clients.Db.Find(&inscripciones) //adaptar
 
+	Db.Where("id_course = ?", idMongo).Find(&inscripciones)
 	log.Debug("Inscripciones: ", inscripciones)
+
 	return inscripciones
+
 }
 
-func (s *inscripcionClient) GetCourseByUserId(id int) dao_inscripcion.Inscripciones {
+func GetInscripcionByUserId(idUser string) dao_inscripcion.Inscripciones {
 	var inscripciones dao_inscripcion.Inscripciones
-	clients.Db.Where("user_id = ?", id).Find(&inscripciones) //adaptar
 
+	Db.Where("id_user = ?", idUser).Find(&inscripciones)
 	log.Debug("Inscripciones: ", inscripciones)
+
 	return inscripciones
 }
