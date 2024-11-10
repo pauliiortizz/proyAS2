@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema name="courses" version="1.6">
+    <fields>
+        <field name="course_id" type="string" indexed="true" stored="true" required="true"/>
+        <field name="nombre" type="text_general" indexed="true" stored="true"/>
+        <field name="profesor_id" type="pint" indexed="true" stored="true"/>
+        <field name="categoria" type="text_general" indexed="true" stored="true"/>
+        <field name="descripcion" type="text_general" indexed="true" stored="true"/>
+        <field name="valoracion" type="float" indexed="true" stored="true"/>
+        <field name="duracion" type="pint" indexed="true" stored="true"/>
+        <field name="requisitos" type="text_general" indexed="true" stored="true"/>
+        <field name="url_image" type="text_general" indexed="true" stored="true"/>
+        <field name="fecha_inicio" type="date" indexed="true" stored="true"/>
+    </fields>
+
+    <uniqueKey>id</uniqueKey>
+
+    <defaultSearchField>nombre</defaultSearchField>
+    <similarity class="solr.ClassicSimilarity"/>
+</schema>

@@ -45,6 +45,17 @@ services:
     networks:
       - app-network
 
+  solr:
+    image: solr:latest
+    container_name: solr-container
+    ports:
+      - "8983:8983"
+    volumes:
+      - ./search-api/solr-config:/opt/solr/server/solr/courses
+    command: solr-create -c courses
+    networks:
+      - app-network
+
   users-api:
     image: users-api:latest
     container_name: users-api-container
@@ -72,6 +83,21 @@ services:
     depends_on:
       - mongo
       - rabbitmq
+    networks:
+      - app-network
+
+  search-api:
+    image: search-api:latest
+    container_name: search-api-container
+    build:
+      context: ./search-api
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    command: /bin/sh -c "sleep 30 && go run main.go"
+    depends_on:
+      - rabbitmq
+      - solr
     networks:
       - app-network
 

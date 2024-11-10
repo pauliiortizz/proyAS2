@@ -21,7 +21,7 @@ func main() {
 	eventsQueue := queues.NewRabbit(queues.RabbitConfig{
 		Host:      "rabbitmq",
 		Port:      "5672",
-		Username:  "root",
+		Username:  "user",
 		Password:  "root",
 		QueueName: "courses-news",
 	})
