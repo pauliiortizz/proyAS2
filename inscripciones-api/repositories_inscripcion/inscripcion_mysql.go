@@ -1,10 +1,11 @@
 package repositories_inscripcion
 
 import (
-	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql" // Import MySQL driver
 	log "github.com/sirupsen/logrus"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 	inscripcionDao "inscripciones/dao_inscripcion"
 	errores "inscripciones/extras"
 )
@@ -18,82 +19,46 @@ type MySQLConfig struct {
 }
 
 type MySQL struct {
-	db *sql.DB
+	db *gorm.DB
 }
 
 func NewMySQL(config MySQLConfig) *MySQL {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", config.Username, config.Password, config.Host, config.Port, config.Database)
-	db, err := sql.Open("mysql", dsn)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", config.Username, config.Password, config.Host, config.Port, config.Database)
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("failed to connect to MySQL: %s", err.Error())
 	}
-	if err := db.Ping(); err != nil {
-		log.Fatalf("failed to ping MySQL: %s", err.Error())
+
+	var inscripcion inscripcionDao.Inscripcion
+	if err := db.AutoMigrate(inscripcion); err != nil {
+		log.Fatalf("error running Automigrate: %s", err.Error())
 	}
+
 	return &MySQL{db: db}
 }
 
-type Repository interface {
-	InsertInscripcion(inscripcion inscripcionDao.Inscripcion) (int64, error)
-	GetInscripcionByUserID(userID int) ([]inscripcionDao.Inscripcion, error)
-	GetInscripcionByCourseID(courseID int) ([]inscripcionDao.Inscripcion, error)
-}
-
+// InsertInscripcion - Inserta una inscripción usando GORM
 func (repository MySQL) InsertInscripcion(inscripcion inscripcionDao.Inscripcion) (int64, error) {
-	result, err := repository.db.Exec("INSERT INTO users (id_user, id_course, fecha_inscripcion) VALUES (?, ?, ?)", inscripcion.Id_user, inscripcion.Id_course, inscripcion.Fecha_inscripcion)
-	if err != nil {
+	if err := repository.db.Create(&inscripcion).Error; err != nil {
 		return 0, errores.NewInternalServerApiError("error creating inscripcion", err)
 	}
-
-	id, err := result.LastInsertId()
-	if err != nil {
-		return 0, errores.NewInternalServerApiError("error getting last insert id: %w", err)
-	}
-	return id, nil
+	return int64(inscripcion.Id_inscripcion), nil
 }
 
+// GetInscripcionByUserID - Busca inscripciones por ID de usuario usando GORM
 func (repository *MySQL) GetInscripcionByUserID(userID int) ([]inscripcionDao.Inscripcion, error) {
-	rows, err := repository.db.Query("SELECT id_inscripcion, id_user, id_course, fecha_inscripcion FROM inscripciones WHERE id_user = ?", userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
 	var inscripciones []inscripcionDao.Inscripcion
-	for rows.Next() {
-		var inscripcion inscripcionDao.Inscripcion
-		if err := rows.Scan(&inscripcion.Id_inscripcion, &inscripcion.Id_user, &inscripcion.Id_course, &inscripcion.Fecha_inscripcion); err != nil {
-			return nil, err
-		}
-		inscripciones = append(inscripciones, inscripcion)
+	if err := repository.db.Where("id_user = ?", userID).Find(&inscripciones).Error; err != nil {
+		return nil, fmt.Errorf("error fetching inscripciones by user ID: %w", err)
 	}
-
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-
 	return inscripciones, nil
 }
 
+// GetInscripcionByCourseID - Busca inscripciones por ID de curso usando GORM
 func (repository *MySQL) GetInscripcionByCourseID(courseID int) ([]inscripcionDao.Inscripcion, error) {
-	rows, err := repository.db.Query("SELECT id_inscripcion, id_user, id_course, fecha_inscripcion FROM inscripciones WHERE id_course = ?", courseID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
 	var inscripciones []inscripcionDao.Inscripcion
-	for rows.Next() {
-		var inscripcion inscripcionDao.Inscripcion
-		if err := rows.Scan(&inscripcion.Id_inscripcion, &inscripcion.Id_user, &inscripcion.Id_course, &inscripcion.Fecha_inscripcion); err != nil {
-			return nil, err
-		}
-		inscripciones = append(inscripciones, inscripcion)
+	if err := repository.db.Where("id_course = ?", courseID).Find(&inscripciones).Error; err != nil {
+		return nil, fmt.Errorf("error fetching inscripciones by course ID: %w", err)
 	}
-
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-
 	return inscripciones, nil
 }

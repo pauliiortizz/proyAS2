@@ -18,6 +18,7 @@ type User struct {
 	Apellido string `json:"last_name"`
 	Admin    bool   `json:"admin"`
 }
+
 type CourseDto struct {
 	Course_id    string    `json:"course_id"`
 	Nombre       string    `json:"nombre"`

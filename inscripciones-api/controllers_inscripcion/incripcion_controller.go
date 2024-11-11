@@ -4,17 +4,23 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+	"inscripciones/dao_inscripcion"
 	"inscripciones/domain_inscripcion"
-	"inscripciones/services_inscripcion"
 	"net/http"
 	"strconv"
 )
 
-type InscripcionController struct {
-	service services_inscripcion.InscripcionServiceInterface
+type InscripcionServiceInterface interface {
+	InsertInscripcion(inscripcionDto domain_inscripcion.InscripcionDto) (domain_inscripcion.InscripcionDto, error)
+	GetInscripcionByUserID(userID int) ([]dao_inscripcion.Inscripcion, error)
+	GetInscripcionByCourseID(courseID int) ([]dao_inscripcion.Inscripcion, error)
 }
 
-func NewController(service services_inscripcion.InscripcionServiceInterface) *InscripcionController {
+type InscripcionController struct {
+	service InscripcionServiceInterface
+}
+
+func NewController(service InscripcionServiceInterface) *InscripcionController {
 	return &InscripcionController{service: service}
 }
 

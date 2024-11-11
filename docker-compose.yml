@@ -1,0 +1,121 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql-container
+    ports:
+      - "3307:3306"  # Cambié el puerto mapeado para el contenedor MySQL interno a 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: RaTa8855
+      MYSQL_DATABASE: users-api
+      MYSQL_PASSWORD: RaTa8855
+    networks:
+      - app-network
+
+  memcached:
+    image: memcached:latest
+    container_name: memcached-container
+    ports:
+      - "11211:11211"
+    networks:
+      - app-network
+
+  mongo:
+    image: mongo:4.4.6
+    container_name: mongo-container
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: RaTa8855
+    networks:
+      - app-network
+
+  rabbitmq:
+    image: rabbitmq:3-management  # Cambié a `3-management`
+    container_name: rabbit-container
+    ports:
+      - "5671:5671"
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: root
+    networks:
+      - app-network
+
+  solr:
+    image: solr:latest
+    container_name: solr-container
+    ports:
+      - "8983:8983"
+    volumes:
+      - ./search-api/solr-config:/opt/solr/server/solr/courses
+    command: solr-create -c courses
+    networks:
+      - app-network
+
+  users-api:
+    image: users-api:latest
+    container_name: users-api-container
+    build:
+      context: ./users-api
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    command: /bin/sh -c "sleep 30 && go run main.go"
+    depends_on:
+      - memcached
+      - mysql
+    networks:
+      - app-network
+
+  cursos-api:
+    image: cursos-api:latest
+    container_name: cursos-api-container
+    build:
+      context: ./cursos-api  # Cambié la ruta para comenzar con `./`
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    command: /bin/sh -c "sleep 50 && go run main.go"
+    depends_on:
+      - mongo
+      - rabbitmq
+    networks:
+      - app-network
+
+  search-api:
+    image: search-api:latest
+    container_name: search-api-container
+    build:
+      context: ./search-api
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    command: /bin/sh -c "sleep 30 && go run main.go"
+    depends_on:
+      - rabbitmq
+      - solr
+    networks:
+      - app-network
+
+  inscripcion-api:
+    image: inscripciones-api:latest  # Cambié `lastet` a `latest`
+    container_name: inscripciones-api-container
+    build:
+      context: ./inscripciones-api
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    command: /bin/sh -c "sleep 30 && go run main.go"
+    depends_on:
+      - mysql
+    networks:
+      - app-network  # Añadí el espacio correcto
+
+
+networks:
+  app-network:
+    driver: bridge

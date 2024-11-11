@@ -4,7 +4,7 @@ import "time"
 
 const (
 	MySQLHost     = "mysql"
-	MySQLPort     = "3306"
+	MySQLPort     = "3307"
 	MySQLDatabase = "users-api"
 	MySQLUsername = "root"
 	MySQLPassword = "RaTa8855"

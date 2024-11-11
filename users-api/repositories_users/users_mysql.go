@@ -1,10 +1,13 @@
 package repositories_users
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql" // Import MySQL driver
+	"gorm.io/driver/mysql"
+	_ "gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	_ "gorm.io/gorm"
 	"log"
 	users "users/dao_users"
 	errores "users/extras"
@@ -19,7 +22,7 @@ type MySQLConfig struct {
 }
 
 type MySQL struct {
-	db *sql.DB
+	db *gorm.DB
 }
 
 func NewMySQL(config MySQLConfig) MySQL {
@@ -27,14 +30,14 @@ func NewMySQL(config MySQLConfig) MySQL {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", config.Username, config.Password, config.Host, config.Port, config.Database)
 
 	// Open connection to MySQL
-	db, err := sql.Open("mysql", dsn)
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("failed to connect to MySQL: %s", err.Error())
 	}
 
-	// Ping the database to verify connection
-	if err := db.Ping(); err != nil {
-		log.Fatalf("failed to ping MySQL: %s", err.Error())
+	var user users.User
+	if err := db.AutoMigrate(user); err != nil {
+		log.Fatalf("error running Automigrate: %s", err.Error())
 	}
 
 	return MySQL{
@@ -44,23 +47,21 @@ func NewMySQL(config MySQLConfig) MySQL {
 
 func (repository MySQL) GetUserById(id int64) (users.User, error) {
 	var user users.User
-	if err := repository.db.
-		QueryRow("SELECT user_id, email, password, nombre, apellido, admin FROM users WHERE user_id = ?", id).
-		Scan(&user.User_id, &user.Email, &user.Password, &user.Nombre, &user.Apellido, &user.Admin); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+
+	if err := repository.db.First(&user, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return user, fmt.Errorf("user not found")
 		}
-		return user, fmt.Errorf("error fetching user by id: %w", err)
+		return user, fmt.Errorf("error fetching user by email: %w", err)
 	}
+
 	return user, nil
 }
 
 func (repository MySQL) GetUserByEmail(email string) (users.User, error) {
 	var user users.User
-	if err := repository.db.
-		QueryRow("SELECT user_id, email, password, admin FROM users WHERE email = ?", email).
-		Scan(&user.User_id, &user.Email, &user.Password, &user.Admin); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+	if err := repository.db.Where("email = ?", email).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return user, fmt.Errorf("user not found")
 		}
 		return user, fmt.Errorf("error fetching user by email: %w", err)
@@ -69,14 +70,8 @@ func (repository MySQL) GetUserByEmail(email string) (users.User, error) {
 }
 
 func (repository MySQL) CreateUser(user users.User) (int64, error) {
-	result, err := repository.db.Exec("INSERT INTO users (nombre, apellido, email, password, admin) VALUES (?, ?, ?, ?, ?)", user.Nombre, user.Apellido, user.Email, user.Password, user.Admin)
-	if err != nil {
+	if err := repository.db.Create(&user).Error; err != nil {
 		return 0, errores.NewInternalServerApiError("error creating user", err)
 	}
-
-	id, err := result.LastInsertId()
-	if err != nil {
-		return 0, errores.NewInternalServerApiError("error getting last insert id: %w", err)
-	}
-	return id, nil
+	return user.User_id, nil
 }
