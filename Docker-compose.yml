@@ -5,11 +5,11 @@ services:
     image: mysql:latest
     container_name: mysql-container
     ports:
-      - "3307:3307"
+      - "3307:3306"  # Cambié el puerto mapeado para el contenedor MySQL interno a 3306
     environment:
-      MYSQL_ROOT_PASSWORD: margoch
+      MYSQL_ROOT_PASSWORD: Belgrano1905
       MYSQL_DATABASE: users-api
-      MYSQL_PASSWORD: margoch
+      MYSQL_PASSWORD: Belgrano1905
     networks:
       - app-network
 
@@ -28,12 +28,12 @@ services:
       - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_ROOT_PASSWORD: Belgrano1905
     networks:
       - app-network
 
   rabbitmq:
-    image: rabbitmq:4-management
+    image: rabbitmq:3-management  # Cambié a `3-management`
     container_name: rabbit-container
     ports:
       - "5671:5671"
@@ -41,7 +41,7 @@ services:
       - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: user
-      RABBITMQ_DEFAULT_PASS: root
+      RABBITMQ_DEFAULT_PASS: password
     networks:
       - app-network
 
@@ -75,7 +75,7 @@ services:
     image: cursos-api:latest
     container_name: cursos-api-container
     build:
-      context: .proyAS2/cursos-api
+      context: ./cursos-api  # Cambié la ruta para comenzar con `./`
       dockerfile: Dockerfile
     ports:
       - "8081:8081"
@@ -101,9 +101,8 @@ services:
     networks:
       - app-network
 
-
   inscripcion-api:
-    image: inscripciones-api:lastet
+    image: inscripciones-api:latest  # Cambié `lastet` a `latest`
     container_name: inscripciones-api-container
     build:
       context: ./inscripciones-api
@@ -114,7 +113,7 @@ services:
     depends_on:
       - mysql
     networks:
-      -app-network:
+      - app-network  # Añadí el espacio correcto
 
 
 networks:

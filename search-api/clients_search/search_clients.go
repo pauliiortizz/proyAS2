@@ -3,9 +3,11 @@ package queues
 import (
 	"encoding/json"
 	"fmt"
+	sirup "github.com/sirupsen/logrus"
 	"github.com/streadway/amqp"
 	"log"
 	"search/domain_search"
+	"search/services_search"
 )
 
 type RabbitConfig struct {
@@ -22,17 +24,19 @@ type Rabbit struct {
 	queue      amqp.Queue
 }
 
-// NewRabbit creates a new RabbitMQ connection and declares the queue
 func NewRabbit(config RabbitConfig) Rabbit {
 	connection, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%s/", config.Username, config.Password, config.Host, config.Port))
 	if err != nil {
-		log.Fatalf("error getting Rabbit connection: %w", err)
+		log.Fatalf("error getting Rabbit connection: %v", err)
 	}
 	channel, err := connection.Channel()
 	if err != nil {
-		log.Fatalf("error creating Rabbit channel: %w", err)
+		log.Fatalf("error creating Rabbit channel: %v", err)
 	}
 	queue, err := channel.QueueDeclare(config.QueueName, false, false, false, false, nil)
+	if err != nil {
+		log.Fatalf("error declaring Rabbit queue: %v", err)
+	}
 	return Rabbit{
 		connection: connection,
 		channel:    channel,
@@ -40,30 +44,32 @@ func NewRabbit(config RabbitConfig) Rabbit {
 	}
 }
 
-// StartConsumer starts listening for messages on the RabbitMQ queue
-func (queue Rabbit) StartConsumer(handler func(domain_search.CourseNew)) error {
+// StartConsumer starts listening for messages on the RabbitMQ queue using the provided service handler
+func (queue Rabbit) StartConsumer(service services_search.Service) error {
 	messages, err := queue.channel.Consume(
 		queue.queue.Name,
 		"",
-		true, // Auto-acknowledge messages
+		true,
 		false,
 		false,
 		false,
 		nil,
 	)
 	if err != nil {
-		return fmt.Errorf("error registering cousrse: %w", err)
+		return fmt.Errorf("failed to start consumer: %v", err)
 	}
 
 	go func() {
 		for msg := range messages {
-			var courseUpdate domain_search.CourseNew
-			if err := json.Unmarshal(msg.Body, &courseUpdate); err != nil {
-				log.Printf("error unmarshaling message: %v", err)
+			var courseNew domain_search.CourseNew
+			err := json.Unmarshal(msg.Body, &courseNew)
+			if err != nil {
+				sirup.Error("Error unmarshaling message:", err)
 				continue
 			}
 
-			handler(courseUpdate)
+			// Call the service method
+			service.HandleCourseNew(courseNew)
 		}
 	}()
 
@@ -73,9 +79,9 @@ func (queue Rabbit) StartConsumer(handler func(domain_search.CourseNew)) error {
 // Close cleans up the RabbitMQ resources
 func (queue Rabbit) Close() {
 	if err := queue.channel.Close(); err != nil {
-		log.Printf("error closing Rabbit channel: %v", err)
+		sirup.Error("error closing Rabbit channel:", err)
 	}
 	if err := queue.connection.Close(); err != nil {
-		log.Printf("error closing Rabbit connection: %v", err)
+		sirup.Error("error closing Rabbit connection:", err)
 	}
 }

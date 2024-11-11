@@ -4,10 +4,10 @@ import "time"
 
 const (
 	MySQLHost     = "mysql"
-	MySQLPort     = "3307"
+	MySQLPort     = "3306"
 	MySQLDatabase = "users-api"
 	MySQLUsername = "root"
-	MySQLPassword = "margoch"
+	MySQLPassword = "Belgrano1905"
 	CacheDuration = 30 * time.Second
 	MemcachedHost = "memcached"
 	MemcachedPort = "11211"

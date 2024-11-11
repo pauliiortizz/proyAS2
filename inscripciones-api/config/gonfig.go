@@ -1,7 +1,7 @@
 package config
 
 const (
-	MySQLHost     = "localhost"
+	MySQLHost     = "mysql"
 	MySQLPort     = "3306"
 	MySQLDatabase = "inscripciones-api"
 	MySQLUsername = "root"

@@ -1,11 +1,13 @@
 package clients_cursos
 
 import (
-	cursosDomain "cursos/domain_cursos"
+	"context"
+	"cursos/domain_cursos"
 	"encoding/json"
 	"fmt"
-	"github.com/streadway/amqp"
-	"log"
+	amqp "github.com/rabbitmq/amqp091-go"
+	log "github.com/sirupsen/logrus"
+	"time"
 )
 
 type RabbitConfig struct {
@@ -16,54 +18,64 @@ type RabbitConfig struct {
 	QueueName string
 }
 
-type Rabbit struct {
-	connection *amqp.Connection
-	channel    *amqp.Channel
-	queue      amqp.Queue
+type queueProducer struct {
+	channel *amqp.Channel
+	queue   amqp.Queue
 }
 
-func NewRabbit(config RabbitConfig) Rabbit {
-	connection, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%s/", config.Username, config.Password, config.Host, config.Port))
+// NewRabbit crea una nueva instancia de `queueProducer`
+func NewRabbit(config RabbitConfig) *queueProducer {
+	conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%s/", config.Username, config.Password, config.Host, config.Port))
 	if err != nil {
-		log.Fatalf("error getting Rabbit connection: %w", err)
+		log.Fatalf("Failed to connect to RabbitMQ: %v", err)
 	}
-	channel, err := connection.Channel()
+
+	channel, err := conn.Channel()
 	if err != nil {
-		log.Fatalf("error creating Rabbit channel: %w", err)
+		log.Fatalf("Failed to open channel: %v", err)
 	}
-	queue, err := channel.QueueDeclare(config.QueueName, false, false, false, false, nil)
-	return Rabbit{
-		connection: connection,
-		channel:    channel,
-		queue:      queue,
+
+	queue, err := channel.QueueDeclare(
+		config.QueueName,
+		false,
+		false,
+		false,
+		false,
+		nil,
+	)
+	if err != nil {
+		log.Fatalf("Failed to declare a queue: %v", err)
 	}
+
+	return &queueProducer{channel: channel, queue: queue}
 }
 
-func (queue Rabbit) Publish(cursoNuevo cursosDomain.CourseNew) error {
-	bytes, err := json.Marshal(cursoNuevo)
+func (q *queueProducer) Publish(cursoNuevo domain_cursos.CourseNew) error {
+	// Convertir `cursoNuevo` a JSON
+	body, err := json.Marshal(cursoNuevo)
 	if err != nil {
-		return fmt.Errorf("error marshaling Rabbit hotelNew: %w", err)
+		log.Debug("Error marshaling CourseNew to JSON", err)
+		return err
 	}
-	if err := queue.channel.Publish(
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err = q.channel.PublishWithContext(
+		ctx,
 		"",
-		queue.queue.Name,
+		q.queue.Name,
 		false,
 		false,
 		amqp.Publishing{
 			ContentType: "application/json",
-			Body:        bytes,
-		}); err != nil {
-		return fmt.Errorf("error publishing to Rabbit: %w", err)
-	}
-	return nil
-}
+			Body:        body,
+		})
 
-// Close cleans up the RabbitMQ resources
-func (queue Rabbit) Close() {
-	if err := queue.channel.Close(); err != nil {
-		log.Printf("error closing Rabbit channel: %v", err)
+	if err != nil {
+		log.Debug("Error while publishing message", err)
+		return err
 	}
-	if err := queue.connection.Close(); err != nil {
-		log.Printf("error closing Rabbit connection: %v", err)
-	}
+
+	return nil
 }

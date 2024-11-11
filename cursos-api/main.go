@@ -15,18 +15,17 @@ func main() {
 		Host:       "mongo",
 		Port:       "27017",
 		Username:   "root",
-		Password:   "root", //root -> pauli, marga
+		Password:   "Belgrano1905", //root -> pauli, marga
 		Database:   "courses-api",
 		Collection: "courses",
 	})
 
-	// Rabbit
 	eventsQueue := queues.NewRabbit(queues.RabbitConfig{
 		Host:      "rabbitmq",
 		Port:      "5672",
 		Username:  "user",
-		Password:  "root",
-		QueueName: "courses-queue",
+		Password:  "password",
+		QueueName: "courses-news",
 	})
 
 	// Services
@@ -41,6 +40,6 @@ func main() {
 	router.POST("/createCourse", controller.Create)
 	router.PUT("/edit/:id", controller.Update)
 	if err := router.Run(":8081"); err != nil {
-		log.Fatalf("error running application: %w", err)
+		log.Fatalf("error running application: %v", err)
 	}
 }

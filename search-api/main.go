@@ -22,7 +22,7 @@ func main() {
 		Host:      "rabbitmq",
 		Port:      "5672",
 		Username:  "user",
-		Password:  "root",
+		Password:  "password",
 		QueueName: "courses-news",
 	})
 
@@ -32,19 +32,17 @@ func main() {
 		Port: "8081",
 	})
 
-	// Services
+	// Crear instancia del servicio
 	service := services.NewService(solrRepo, cursosAPI)
 
-	// Controllers
-	controller := controllers.NewController(service)
-
-	// Launch rabbit consumer
-	if err := eventsQueue.StartConsumer(service.HandleCourseNew); err != nil {
+	// Iniciar el consumidor y pasarle el servicio
+	if err := eventsQueue.StartConsumer(service); err != nil {
 		log.Fatalf("Error running consumer: %v", err)
 	}
 
-	// Create router
+	// Configurar y ejecutar el servidor web
 	router := gin.Default()
+	controller := controllers.NewController(service)
 	router.GET("/search", controller.Search)
 	if err := router.Run(":8082"); err != nil {
 		log.Fatalf("Error running application: %v", err)

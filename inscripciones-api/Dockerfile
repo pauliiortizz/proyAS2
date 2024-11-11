@@ -4,6 +4,11 @@ FROM golang:1.23-alpine
 # Set the working directory inside the container
 WORKDIR /app
 
+# Dockerfile de inscripciones-api
+COPY wait-for.sh /wait-for.sh
+RUN chmod +x /wait-for.sh
+CMD /wait-for.sh mysql 3306 -- go run main.go
+
 # Copy go.mod and go.sum and download dependencies
 COPY go.mod go.sum ./
 RUN go mod tidy
@@ -17,3 +22,4 @@ EXPOSE 8081
 
 # Command to run the binary
 CMD ["./app"]
+
