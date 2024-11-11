@@ -9,7 +9,7 @@ export const ItemListContainer = () => {
     const [showMyCourses, setShowMyCourses] = useState(false);
 
     useEffect(() => {
-        fetch(`http://localhost:8080/search`)
+        fetch(`http://localhost:8082/search`)
             .then(response => response.json())
             .then(data => {
                 setCourses(data);

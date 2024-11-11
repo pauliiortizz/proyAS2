@@ -40,7 +40,7 @@ const CreateCourse = ({ onClose }) => {
         console.log('Enviando datos:', data);
 
         try {
-            const response = await fetch('http://localhost:8080/createCourse', {
+            const response = await fetch('http://localhost:8081/createCourse', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

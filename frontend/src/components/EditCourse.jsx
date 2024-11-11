@@ -18,7 +18,7 @@ const EditCourse = ({ courseId, onClose }) => {
     useEffect(() => {
         const fetchCourseData = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/editCourse/${courseId}`, {
+                const response = await fetch(`http://localhost:8081/edit/${courseId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ const EditCourse = ({ courseId, onClose }) => {
         };
 
         try {
-            const response = await fetch(`http://localhost:8080/edit/${courseId}`, {
+            const response = await fetch(`http://localhost:8081/edit/${courseId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

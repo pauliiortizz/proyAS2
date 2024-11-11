@@ -34,7 +34,7 @@ const RegisterUser = ({ onClose }) => {
         console.log('Enviando datos:', data);
 
         try {
-            const response = await fetch('http://localhost:8080/CreateUser', {
+            const response = await fetch('http://localhost:8080/createUser', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

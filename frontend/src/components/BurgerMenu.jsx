@@ -56,7 +56,7 @@ const BurgerMenu = ({ onLogout }) => {
 
     const fetchCourseDetails = async (courseId) => {
         try {
-            const response = await fetch(`http://localhost:8080/courses/${courseId}`);
+            const response = await fetch(`http://localhost:8081/courses/${courseId}`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -71,7 +71,7 @@ const BurgerMenu = ({ onLogout }) => {
     const handleMyCourses = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/inscripciones/${userId}`);
+            const response = await fetch(`http://localhost:8083/inscripciones/user/${userId}`); //Ver de cambiar el puerto
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }

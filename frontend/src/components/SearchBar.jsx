@@ -12,7 +12,7 @@ const SearchBar = ({ onSearchResults }) => {
         if (searchTerm.trim() === '') {
             // If the search term is empty, fetch all courses
             try {
-                const response = await fetch(`http://localhost:8080/search`, {
+                const response = await fetch(`http://localhost:8082/search`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ const SearchBar = ({ onSearchResults }) => {
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/search/${searchTerm}`, {
+            const response = await fetch(`http://localhost:8082/search/${searchTerm}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

@@ -42,7 +42,7 @@ const Item = ({ course, bandera }) => {
         const checkEnrollment = async () => {
             if (userId) {
                 try {
-                    const response = await axios.get(`http://localhost:8080/inscripciones/${userId}`);
+                    const response = await axios.get(`http://localhost:8083/inscripciones/user/${userId}`);
                     const inscripciones = response.data;
                     const enrolled = inscripciones.some(inscripcion => inscripcion.id_course === course.course_id);
                     setIsEnrolled(enrolled);
