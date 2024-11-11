@@ -22,7 +22,7 @@ func main() {
 		Host:      "rabbitmq",
 		Port:      "5672",
 		Username:  "user",
-		Password:  "password",
+		Password:  "root",
 		QueueName: "courses-news",
 	})
 

@@ -32,7 +32,7 @@ type InscripcionServiceInterface interface {
 
 func (s *inscripcionService) InsertInscripcion(inscripcionDto domain_inscripcion.InscripcionDto) (domain_inscripcion.InscripcionDto, error) {
 	// Obtener el usuario a través de la API de usuario
-	userUrl := fmt.Sprintf("http://localhost:8080/users/%d", inscripcionDto.Id_user)
+	userUrl := fmt.Sprintf("http://users-api:8080/users/%d", inscripcionDto.Id_user)
 	userResp, err := s.HTTPClient.Get(userUrl)
 	if err != nil {
 		return inscripcionDto, fmt.Errorf("error making request to users-api: %w", err)
@@ -49,7 +49,7 @@ func (s *inscripcionService) InsertInscripcion(inscripcionDto domain_inscripcion
 	}
 
 	// Obtener el curso a través de la API de cursos
-	courseUrl := fmt.Sprintf("http://localhost:27017/courses/%s", inscripcionDto.Id_course)
+	courseUrl := fmt.Sprintf("http://courses-api:27017/courses/%s", inscripcionDto.Id_course)
 	courseResp, err := s.HTTPClient.Get(courseUrl)
 	if err != nil {
 		return inscripcionDto, fmt.Errorf("error making request to courses-api: %w", err)

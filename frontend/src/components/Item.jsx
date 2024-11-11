@@ -3,13 +3,13 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { Button, Stack, Card, CardBody, CardFooter, Text, Image, useDisclosure } from "@chakra-ui/react";
 import Inscribirmebutton from "./Inscribirmebutton.jsx";
-import EliminarButton from "./EliminarButton.jsx";
+//import EliminarButton from "./EliminarButton.jsx";
 import PopupEdit from "./PopUpEdit.jsx";
 import '../estilos/Inscribirmebutton.css';
 import '../estilos/Course.css';
-import PopupValorar from "./PopUpValorar.jsx"
-import PopupSubirArchivo from "./PopUpArchivo.jsx";
-import PopupSeeReview from "./PopUpSeeReview.jsx";
+//import PopupValorar from "./PopUpValorar.jsx"
+//import PopupSubirArchivo from "./PopUpArchivo.jsx";
+//import PopupSeeReview from "./PopUpSeeReview.jsx";
 
 const Item = ({ course, bandera }) => {
     const [userId, setUserId] = useState(null);

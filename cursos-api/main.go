@@ -15,7 +15,7 @@ func main() {
 		Host:       "mongo",
 		Port:       "27017",
 		Username:   "root",
-		Password:   "Belgrano1905", //root -> pauli, marga
+		Password:   "root", //root -> pauli, marga
 		Database:   "courses-api",
 		Collection: "courses",
 	})
@@ -24,7 +24,7 @@ func main() {
 		Host:      "rabbitmq",
 		Port:      "5672",
 		Username:  "user",
-		Password:  "password",
+		Password:  "root",
 		QueueName: "courses-news",
 	})
 
