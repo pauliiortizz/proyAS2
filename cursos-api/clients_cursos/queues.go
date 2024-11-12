@@ -37,7 +37,7 @@ func NewRabbit(config RabbitConfig) *queueProducer {
 
 	queue, err := channel.QueueDeclare(
 		config.QueueName,
-		true,
+		false,
 		false,
 		false,
 		false,

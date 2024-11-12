@@ -72,14 +72,26 @@ func (service Service) HandleCourseNew(cursoNew cursosDomain.CourseNew) {
 			return
 		}
 
+		cursoDAO := cursosDomain.CourseDto{
+			Course_id:    curso.Course_id,
+			Nombre:       curso.Nombre,
+			Profesor_id:  curso.Profesor_id,
+			Categoria:    curso.Categoria,
+			Descripcion:  curso.Descripcion,
+			Duracion:     curso.Duracion,
+			Requisitos:   curso.Requisitos,
+			Fecha_inicio: curso.Fecha_inicio,
+			Url_image:    curso.Url_image,
+		}
+
 		if cursoNew.Operation == "CREATE" {
-			if _, err := service.repository.Index(context.Background(), curso); err != nil {
+			if _, err := service.repository.Index(context.Background(), cursoDAO); err != nil {
 				fmt.Printf("Error indexing course (%s): %v\n", cursoNew.Curso_id, err)
 			} else {
 				fmt.Println("Course indexed successfully:", cursoNew.Curso_id)
 			}
 		} else {
-			if err := service.repository.Update(context.Background(), curso); err != nil {
+			if err := service.repository.Update(context.Background(), cursoDAO); err != nil {
 				fmt.Printf("Error updating course (%s): %v\n", cursoNew.Curso_id, err)
 			} else {
 				fmt.Println("Course updated successfully:", cursoNew.Curso_id)

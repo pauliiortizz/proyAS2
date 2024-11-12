@@ -30,10 +30,10 @@ export const Navbar = () => {
       <header>
         <div className='contenedor'>
           <div className='logoContainer'>
-            <img src="/icon.png" alt="cafe y libros" width="100px" height="40px"/>
+            <img src="/logo_navbar.PNG" alt="arbol y libro" width="100px" height="40px"/>
           </div>
           <div className='titleContainer'>
-            Coffee&Learn
+            Nature Academy
           </div>
           <div id='welcomeMessage'>
             <h1 style={{fontFamily: 'Spoof Trial, sans-serif'}}>

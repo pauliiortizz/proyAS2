@@ -73,6 +73,8 @@ func (service Service) Create(ctx context.Context, curso cursosDomain.CourseDto)
 	if err != nil {
 		return "", fmt.Errorf("error creating curso in main repository: %w", err)
 	}
+	record.Course_id = id
+
 	if err := service.eventsQueue.Publish(cursosDomain.CourseNew{
 		Operation: "CREATE",
 		Course_id: id,

@@ -29,8 +29,8 @@ func (h *HttpClient) GetUser(userID int) (domain_inscripcion.User, error) {
 	return userDto, nil
 }
 
-func (h *HttpClient) GetCourse(courseID int) (domain_inscripcion.CourseDto, error) {
-	courseUrl := fmt.Sprintf("http://courses-api:8081/courses/%d", courseID)
+func (h *HttpClient) GetCourse(courseID string) (domain_inscripcion.CourseDto, error) {
+	courseUrl := fmt.Sprintf("http://cursos-api:8081/courses/%s", courseID)
 	courseResp, err := http.Get(courseUrl)
 	if err != nil {
 		return domain_inscripcion.CourseDto{}, fmt.Errorf("error making request to courses-api: %w", err)
