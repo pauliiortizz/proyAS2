@@ -37,7 +37,7 @@ func NewRabbit(config RabbitConfig) *queueProducer {
 
 	queue, err := channel.QueueDeclare(
 		config.QueueName,
-		false,
+		true,
 		false,
 		false,
 		false,
@@ -76,6 +76,6 @@ func (q *queueProducer) Publish(cursoNuevo domain_cursos.CourseNew) error {
 		log.Debug("Error while publishing message", err)
 		return err
 	}
-
+	log.Printf("Publicando mensaje en RabbitMQ para el curso: %v", cursoNuevo)
 	return nil
 }

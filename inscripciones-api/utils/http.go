@@ -11,7 +11,7 @@ import (
 type HttpClient struct{}
 
 func (h *HttpClient) GetUser(userID int) (domain_inscripcion.User, error) {
-	userUrl := fmt.Sprintf("http://users-api/users/%d", userID)
+	userUrl := fmt.Sprintf("http://users-api:8080/users/%d", userID)
 	userResp, err := http.Get(userUrl)
 	if err != nil {
 		return domain_inscripcion.User{}, fmt.Errorf("error making request to users-api: %w", err)
@@ -30,7 +30,7 @@ func (h *HttpClient) GetUser(userID int) (domain_inscripcion.User, error) {
 }
 
 func (h *HttpClient) GetCourse(courseID int) (domain_inscripcion.CourseDto, error) {
-	courseUrl := fmt.Sprintf("http://courses-api/courses/%d", courseID)
+	courseUrl := fmt.Sprintf("http://courses-api:8081/courses/%d", courseID)
 	courseResp, err := http.Get(courseUrl)
 	if err != nil {
 		return domain_inscripcion.CourseDto{}, fmt.Errorf("error making request to courses-api: %w", err)

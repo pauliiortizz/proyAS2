@@ -3,9 +3,9 @@ version: '3.8'
 services:
   mysql:
     image: mysql:latest
-    container_name: mysql-container
+    container_name: mysql
     ports:
-      - "3306:3306"  # Cambié el puerto mapeado para el contenedor MySQL interno a 3306
+      - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: RaTa8855
       MYSQL_DATABASE: users-api
@@ -28,12 +28,12 @@ services:
       - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: RaTa8855
+      MONGO_INITDB_ROOT_PASSWORD: root
     networks:
       - app-network
 
   rabbitmq:
-    image: rabbitmq:3-management  # Cambié a `3-management`
+    image: rabbitmq:3-management
     container_name: rabbit-container
     ports:
       - "5671:5671"
@@ -75,7 +75,7 @@ services:
     image: cursos-api:latest
     container_name: cursos-api-container
     build:
-      context: ./cursos-api  # Cambié la ruta para comenzar con `./`
+      context: ./cursos-api
       dockerfile: Dockerfile
     ports:
       - "8081:8081"
@@ -102,7 +102,7 @@ services:
       - app-network
 
   inscripcion-api:
-    image: inscripciones-api:latest  # Cambié `lastet` a `latest`
+    image: inscripciones-api:latest
     container_name: inscripciones-api-container
     build:
       context: ./inscripciones-api
@@ -113,8 +113,7 @@ services:
     depends_on:
       - mysql
     networks:
-      - app-network  # Añadí el espacio correcto
-
+      - app-network
 
 networks:
   app-network:

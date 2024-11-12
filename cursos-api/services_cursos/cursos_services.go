@@ -7,10 +7,6 @@ import (
 	"fmt"
 )
 
-// Cannot use 'mainRepository' (type Mongo) as the type RepositoryType does not
-// implement 'Repository' as some methods are missing:
-// GetCourseByID(ctx context.Context, id string) (cursosDAO.Curso, error)
-// Update(ctx context.Context, curso cursosDAO.Curso) error
 type Repository interface {
 	GetCourseByID(ctx context.Context, id string) (cursosDAO.Curso, error)
 	Create(ctx context.Context, curso cursosDAO.Curso) (string, error)

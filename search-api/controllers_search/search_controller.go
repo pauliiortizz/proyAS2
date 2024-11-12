@@ -25,7 +25,7 @@ func NewController(service Service) Controller {
 
 func (controller Controller) Search(c *gin.Context) {
 	// Parse query from URL
-	query := c.Query("nombre")
+	query := c.Query("q")
 
 	// Parse offset from URL
 	offset, err := strconv.Atoi(c.Query("offset"))
