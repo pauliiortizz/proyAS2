@@ -73,13 +73,13 @@ const BurgerMenu = ({ onLogout }) => {
     const handleMyCourses = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:8083/inscripciones/user/${userId}`); //Ver de cambiar el puerto
+            const response = await fetch(`http://localhost:8083/inscripciones/user/${userId}`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             const inscripciones = await response.json();
             console.log('Inscripciones:', inscripciones);
-            const courseDetailsPromises = inscripciones.map((inscripcion) => fetchCourseDetails(inscripcion.id_course));
+            const courseDetailsPromises = inscripciones.map((inscripcion) => fetchCourseDetails(inscripcion.Id_course));
             const courseDetails = await Promise.all(courseDetailsPromises);
             setCourses(courseDetails);
             console.log('Courses with details fetched successfully:', courseDetails);

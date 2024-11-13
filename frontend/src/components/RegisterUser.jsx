@@ -76,7 +76,12 @@ const RegisterUser = ({ onClose }) => {
             <FormControl>
                 <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Contraseña</FormLabel>
                 <InputGroup size='md' className='inputContrasena'>
-                    <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
+                    <Input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}
+                    />
                     <InputRightElement width='4.5rem'>
                         <Button h='1.75rem' size='sm' onClick={handleClick} style={{fontFamily: 'Spoof Trial, sans-serif'}}>
                             {show ? 'Ocultar' : 'Mostrar'}

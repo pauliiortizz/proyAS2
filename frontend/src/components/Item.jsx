@@ -41,7 +41,7 @@ const Item = ({ course, bandera }) => {
                     const response = await axios.get(`http://localhost:8083/inscripciones/user/${userId}`);
                     const inscripciones = response.data;
                     {/* eslint-disable-next-line react/prop-types */}
-                    const enrolled = inscripciones.some(inscripcion => inscripcion.id_course === course.course_id);
+                    const enrolled = inscripciones.some(inscripcion => inscripcion.Id_course === course.course_id);
                     setIsEnrolled(enrolled);
                 } catch (error) {
                     console.error('Error checking enrollment:', error);
@@ -107,26 +107,13 @@ const Item = ({ course, bandera }) => {
                 <CardFooter>
                     {userId && (
                         isAdmin ? (
-                            <>
-                                <Button w="40%" style={{ fontFamily: 'Spoof Trial, sans-serif' }} onClick={handleEditCourse}>Editar</Button>
-                            </>
+                            <Button w="40%" style={{ fontFamily: 'Spoof Trial, sans-serif' }} onClick={handleEditCourse}>Editar</Button>
                         ) : (
-                            isEnrolled ? (
-                                bandera !== 1 ? (
-                                    <>
-                                    </>
-                                ) : null
-                            ) : (
-                                bandera !== 1 ? (
-                                    <>
-                                        {/* eslint-disable-next-line react/prop-types */}
-                                    <Inscribirmebutton courseId={course.course_id} />
-                                    </>
-                ) : null
+                            !isEnrolled && bandera !== 1 && (
+                                <Inscribirmebutton courseId={course.course_id} />
                             )
                         )
                     )}
-
                 </CardFooter>
             </Stack>
             {/* eslint-disable-next-line react/prop-types */}
