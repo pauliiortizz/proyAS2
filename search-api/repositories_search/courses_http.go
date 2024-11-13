@@ -27,7 +27,9 @@ func NewHTTP(config HTTPConfig) HTTP {
 }
 
 func (repository HTTP) GetCourseByID(ctx context.Context, id string) (coursesDomain.CourseDto, error) {
-	resp, err := http.Get(repository.baseURL(id))
+	url := repository.baseURL(id)
+	fmt.Println("URL: ", url)
+	resp, err := http.Get(url)
 	if err != nil {
 		return coursesDomain.CourseDto{}, fmt.Errorf("Error fetching course (%s): %w\n", id, err)
 	}

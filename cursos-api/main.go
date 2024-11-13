@@ -5,8 +5,10 @@ import (
 	controllers "cursos/controllers_cursos"
 	repositories "cursos/repositories_cursos"
 	services "cursos/services_cursos"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"
+	"time"
 )
 
 func main() {
@@ -36,7 +38,18 @@ func main() {
 
 	// Router
 	router := gin.Default()
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
 	router.GET("/courses/:id", controller.GetCourseByID)
+	router.GET("/courses", controller.GetCourses)
 	router.POST("/createCourse", controller.Create)
 	router.PUT("/edit/:id", controller.Update)
 	if err := router.Run(":8081"); err != nil {

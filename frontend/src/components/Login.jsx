@@ -53,7 +53,7 @@ const Login = ({ onClose }) => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ email, password }),
+                    body: JSON.stringify({email, password}),
                 });
 
                 if (response.ok) {
@@ -65,6 +65,13 @@ const Login = ({ onClose }) => {
                         Cookies.set('email', email);
                         Cookies.set('token', data.token);
                         Cookies.set('admin', data.admin ? "1" : "0");
+
+                        console.log('Cookies:', {
+                            user_id: Cookies.get('user_id'),
+                            email: Cookies.get('email'),
+                            token: Cookies.get('token'),
+                            admin: Cookies.get('admin')
+                        });
                         window.location.reload();
                     }
                 } else {

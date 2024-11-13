@@ -2,6 +2,7 @@ import React from 'react';
 import {Button, Input, FormControl, FormLabel, Select, InputRightElement, InputGroup} from "@chakra-ui/react";
 import '../estilos/RegisterUser.css'
 
+// eslint-disable-next-line react/prop-types
 const RegisterUser = ({ onClose }) => {
     const [nombre, setNombre] = React.useState('');
     const [apellido, setApellido] = React.useState('');

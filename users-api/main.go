@@ -1,8 +1,10 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"
+	"time"
 	"users/config"
 	controllers "users/controllers_users"
 	repositories "users/repositories_users"
@@ -52,6 +54,14 @@ func main() {
 	// Create router
 	router := gin.Default()
 
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 	// URL mappings
 
 	router.GET("/users/:id", controller.GetUserById)

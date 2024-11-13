@@ -135,3 +135,17 @@ func (repository Mongo) Update(ctx context.Context, curso cursosDAO.Curso) error
 
 	return nil
 }
+
+func (repository Mongo) GetCourses(ctx context.Context) (cursosDAO.Cursos, error) {
+	cursor, err := repository.client.Database(repository.database).Collection(repository.collection).Find(ctx, bson.M{})
+	if err != nil {
+		return nil, fmt.Errorf("error getting documents: %w", err)
+	}
+	defer cursor.Close(ctx)
+
+	var cursos cursosDAO.Cursos
+	if err := cursor.All(ctx, &cursos); err != nil {
+		return nil, fmt.Errorf("error decoding documents: %w", err)
+	}
+	return cursos, nil
+}

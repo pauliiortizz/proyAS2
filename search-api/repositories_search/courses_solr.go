@@ -74,6 +74,7 @@ func (searchEngine Solr) Index(ctx context.Context, course coursesDomain.CourseD
 		return "", fmt.Errorf("error committing changes to Solr: %w", err)
 	}
 
+	fmt.Println("Indexado")
 	return course.Course_id, nil
 }
 

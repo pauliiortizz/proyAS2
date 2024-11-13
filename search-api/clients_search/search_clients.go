@@ -67,7 +67,7 @@ func (queue Rabbit) StartConsumer(service services_search.Service) error {
 				sirup.Error("Error unmarshaling message:", err)
 				continue
 			}
-
+			fmt.Println(courseNew)
 			// Call the service method
 			service.HandleCourseNew(courseNew)
 		}

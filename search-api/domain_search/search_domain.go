@@ -19,5 +19,5 @@ type CoursesDto []CourseDto
 
 type CourseNew struct {
 	Operation string `json:"operation"`
-	Curso_id  string `json:"curso_id"`
+	Curso_id  string `json:"course_id"`
 }

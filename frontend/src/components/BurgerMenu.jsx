@@ -20,6 +20,8 @@ import PopupRegister from "./PopUpRegister.jsx";
 import ItemList from './ItemList';
 
 
+
+// eslint-disable-next-line react/prop-types
 const BurgerMenu = ({ onLogout }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { isOpen: isPopupOpen, onOpen: onOpenPopup, onClose: onClosePopup } = useDisclosure();
@@ -137,5 +139,7 @@ const BurgerMenu = ({ onLogout }) => {
         </Box>
     );
 };
+
+
 
 export default BurgerMenu;
