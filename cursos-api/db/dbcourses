@@ -14,99 +14,99 @@ db.courses.insertMany([
         "profesor_id": 8,
         "categoria": "Programacion",
         "descripcion": "Curso basico de programacion de golang",
-        "valoracion": 0,
+        "valoracion": 3.9,
         "duracion": 9000,
         "requisitos": "Bajo",
         "url_image": "https://www.freecodecamp.org/news/content/images/2021/10/golang.png",
-        "fecha_inicio": "2020-06-09"
+        "fecha_inicio": "2025-06-09"
     },
     {
         "nombre": "Bartender ricos tragos",
         "profesor_id": 2,
         "categoria": "Cocteleria",
         "descripcion": "Aprende a hacer los mejores tragos",
-        "valoracion": 0,
+        "valoracion": 4.7,
         "duracion": 45,
         "requisitos": "Bajo",
         "url_image": "https://s3-eu-west-1.amazonaws.com/verema/images/valoraciones/0011/0991/coctel.jpg?1353314930",
-        "fecha_inicio": "2024-06-03"
+        "fecha_inicio": "2025-06-03"
     },
     {
         "nombre": "Peluqueria intensiva",
         "profesor_id": 4,
         "categoria": "Belleza",
         "descripcion": "Aprende a hacer desde simples trenzas hasta peinados elaborados",
-        "valoracion": 0,
+        "valoracion": 1,
         "duracion": 80,
         "requisitos": "Bajo",
         "url_image": "https://joseppons.com/formacion/wp-content/uploads/2019/06/abrir-tu-salon-peluqueria.jpg",
-        "fecha_inicio": "2024-07-10"
+        "fecha_inicio": "2025-07-10"
     },
     {
         "nombre": "Golang avanzado",
         "profesor_id": 8,
         "categoria": "Programacion",
         "descripcion": "Curso avanzado del lenguaje golang",
-        "valoracion": 0,
+        "valoracion": 4.5,
         "duracion": 600,
         "requisitos": "Alto",
         "url_image": "https://www.freecodecamp.org/news/content/images/2021/10/golang.png",
-        "fecha_inicio": "2024-07-10"
+        "fecha_inicio": "2025-07-10"
     },
     {
         "nombre": "Pasteleria con Lucas",
         "profesor_id": 19,
         "categoria": "Cocina",
         "descripcion": "Curso basico y divertido de pasteleria",
-        "valoracion": 0,
+        "valoracion": 5,
         "duracion": 150,
         "requisitos": "Bajo",
         "url_image": "https://www.ceac.es/sites/default/files/2019-08/ceac-27-03-2019-reposteria.jpg.webp",
-        "fecha_inicio": "2024-08-12"
+        "fecha_inicio": "2025-08-12"
     },
     {
         "nombre": "Bossa Nova en guitarra",
         "profesor_id": 18,
         "categoria": "Musica",
         "descripcion": "Toca canciones del genero bossa nova en tu guitarra",
-        "valoracion": 0,
+        "valoracion": 2.5,
         "duracion": 68,
         "requisitos": "Intermedio",
         "url_image": "https://img.freepik.com/fotos-premium/foto-persona-irreconocible-tocando-guitarra_762026-81126.jpg",
-        "fecha_inicio": "2024-03-10"
+        "fecha_inicio": "2025-03-10"
     },
     {
         "nombre": "Maquillaje artistico, brillos y fantasia",
         "profesor_id": 17,
         "categoria": "Belleza",
         "descripcion": "Crea tu propio look con Rodolfo y sus esplendidos maquillajes artisticos",
-        "valoracion": 0,
+        "valoracion": 1,
         "duracion": 72,
         "requisitos": "Bajo",
         "url_image": "https://st2.depositphotos.com/6940744/12394/i/450/depositphotos_123947758-stock-photo-years-old-boy-with-blue.jpg",
-        "fecha_inicio": "2024-09-09"
+        "fecha_inicio": "2025-09-09"
     },
     {
         "nombre": "Coffee coctels",
         "profesor_id": 19,
         "categoria": "Cocteleria",
         "descripcion": "Aprende a preparar distintos coctels usando cafe",
-        "valoracion": 0,
+        "valoracion": 4,
         "duracion": 70,
         "requisitos": "Intermedio",
         "url_image": "https://apasionados-por-el-cafe.s3.amazonaws.com/wp-content/uploads/2020/12/shutterstock_1035562495-min_opt.jpg",
-        "fecha_inicio": "2024-11-01"
+        "fecha_inicio": "2025-11-01"
     },
     {
         "nombre": "C++ primeros pasos",
         "profesor_id": 8,
         "categoria": "Programacion",
         "descripcion": "Aprende a dar tus primeros pasos la programacion con el mejor profe",
-        "valoracion": 0,
+        "valoracion": 3.2,
         "duracion": 120,
         "requisitos": "Bajo",
         "url_image": "https://blog.facialix.com/wp-content/uploads/2023/11/curso-gratis-cpp.jpg",
-        "fecha_inicio": "2024-03-02"
+        "fecha_inicio": "2025-03-02"
     }
 ])
 

@@ -4,9 +4,9 @@ import '../estilos/RegisterUser.css'
 
 // eslint-disable-next-line react/prop-types
 const RegisterUser = ({ onClose }) => {
-    const [nombre, setNombre] = React.useState('');
-    const [apellido, setApellido] = React.useState('');
-    const [username, setUsername] = React.useState('');
+    const [first_name, setNombre] = React.useState('');
+    const [last_name, setApellido] = React.useState('');
+    const [email, setUsername] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [admin, setAdmin] = React.useState(''); // Mantener como string para el dropdown
     const [errorMessage, setErrorMessage] = React.useState('');
@@ -17,18 +17,18 @@ const RegisterUser = ({ onClose }) => {
         e.preventDefault();
 
         console.log('Formulario enviado');
-        console.log('Datos del usuario:', { nombre, apellido, username, password, admin });
+        console.log('Datos del usuario:', { first_name, last_name, email, password, admin });
 
-        if (nombre === '' || apellido === '' || username === '' || password === '' || admin === '') {
+        if (first_name === '' || last_name === '' || email === '' || password === '' || admin === '') {
             setErrorMessage('Todos los campos son obligatorios.');
             return;
         }
 
         const data = {
-            username,
+            email,
             password,
-            nombre,
-            apellido,
+            first_name,
+            last_name,
             admin: admin === 'true' // Convertir string a boolean
         };
 
@@ -63,15 +63,15 @@ const RegisterUser = ({ onClose }) => {
         <form id="formRegisterUser" onSubmit={handleSubmit}>
             <FormControl>
                 <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Nombre</FormLabel>
-                <Input value={nombre} onChange={(e) => setNombre(e.target.value)} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
+                <Input value={first_name} onChange={(e) => setNombre(e.target.value)} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
             <FormControl>
                 <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Apellido</FormLabel>
-                <Input value={apellido} onChange={(e) => setApellido(e.target.value)} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
+                <Input value={last_name} onChange={(e) => setApellido(e.target.value)} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
             <FormControl>
                 <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Correo Electrónico</FormLabel>
-                <Input value={username} onChange={(e) => setUsername(e.target.value)} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
+                <Input value={email} onChange={(e) => setUsername(e.target.value)} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
             <FormControl>
                 <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Contraseña</FormLabel>

@@ -2,8 +2,8 @@ import '../estilos/Inscribirmebutton.css';
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 
-const Inscribirmebutton = ({ courseId }) => {
-  const [userId, setUserId] = useState(null);
+const Inscribirmebutton = ({ courseId, fechaInicioCurso }) => {
+  const [user_id, setUserId] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const tokenUser = Cookies.get('token');
 
@@ -22,51 +22,50 @@ const Inscribirmebutton = ({ courseId }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!userId || userId === -1 || userId === 0 || !tokenUser) {
+    // Validación de usuario y token
+    if (!user_id || user_id === -1 || user_id === 0 || !tokenUser) {
       alert("Debes registrarte para inscribirte a un curso");
-    } else {
-      const currentDate = new Date();
-      const storedDate = Cookies.get('Fecha_inicio');
+      return;
+    }
 
-      if (storedDate) {
-        const [storedYear, storedMonth, storedDay] = storedDate.split('-').map(Number);
-        const storedDateObject = new Date(storedYear, storedMonth - 1, storedDay);
+    // Validación de la fecha de inicio del curso
+    const currentDate = new Date();
+    const courseStartDate = new Date(fechaInicioCurso);
 
-        if (storedDateObject <= currentDate) {
-          alert("El curso ya comenzó");
-          return;
-        }
+    if (courseStartDate <= currentDate) {
+      alert("El curso ya comenzó");
+      return;
+    }
+
+    // Realizar la inscripción
+    try {
+      const response = await fetch(`http://localhost:8083/insertinscripcion`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id_course: courseId,
+          id_user: user_id
+        }),
+      });
+
+      if (response.ok) {
+        alert("Inscripción exitosa! :)");
+        window.location.reload();  // Alternativa: utiliza un estado o redirección sin recarga
+      } else if (response.status === 500) {
+        alert("Ya estás inscrito en este curso");
       } else {
-        console.log('No se encontró la cookie de Fecha_inicio');
+        alert("Error en la inscripción. Inténtalo de nuevo.");
       }
-
-      try {
-        const response = await fetch(`http://localhost:8083/insertinscripcion`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            fecha_inscripcion: currentDate,
-            id_course: courseId,
-            id_user: userId
-          }),
-        });
-
-        if (response.ok) {
-          alert("Inscripción exitosa! :)");
-          window.location.reload()
-        } else if (response.status === 500) {
-          alert("Ya estás inscrito en este curso");
-        }
-      } catch (error) {
-        console.log('Error al realizar la solicitud al backend:', error);
-        alert("Error al realizar la inscripción. Inténtalo de nuevo más tarde.");
-      }
+    } catch (error) {
+      console.log('Error al realizar la solicitud al backend:', error);
+      alert("Error al realizar la inscripción. Inténtalo de nuevo más tarde.");
     }
   };
 
-  if (!userId || isAdmin) {
+  // Si el usuario es admin o no está registrado, no mostrar el botón
+  if (!user_id || isAdmin) {
     return null;
   }
 

@@ -14,6 +14,7 @@ const Item = ({ course, bandera }) => {
     const [isEnrolled, setIsEnrolled] = useState(false);
     const { isOpen: isPopupOpenEdit, onOpen: onOpenPopupEdit, onClose: onClosePopupEdit } = useDisclosure();
 
+
     // eslint-disable-next-line react/prop-types
     const formattedDate = new Date(course.fecha_inicio).toLocaleDateString('es-ES', {
         year: 'numeric',
@@ -67,6 +68,7 @@ const Item = ({ course, bandera }) => {
     const handleEditCourse = () => {
         onOpenPopupEdit();
     };
+
 
     return (
         <Card direction={{ base: 'column', sm: 'row' }} overflow='hidden' variant='outline'>

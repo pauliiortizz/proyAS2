@@ -59,19 +59,12 @@ const Login = ({ onClose }) => {
                 if (response.ok) {
                     const data = await response.json();
                     console.log('Respuesta del servidor:', data);
-
-                    if (data.id_user) {
-                        Cookies.set('user_id', data.id_user);
+                    if(data.user_id){
+                        Cookies.set('user_id', data.user_id);
                         Cookies.set('email', email);
                         Cookies.set('token', data.token);
                         Cookies.set('admin', data.admin ? "1" : "0");
 
-                        console.log('Cookies:', {
-                            user_id: Cookies.get('user_id'),
-                            email: Cookies.get('email'),
-                            token: Cookies.get('token'),
-                            admin: Cookies.get('admin')
-                        });
                         window.location.reload();
                     }
                 } else {

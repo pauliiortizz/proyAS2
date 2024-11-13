@@ -78,6 +78,7 @@ const BurgerMenu = ({ onLogout }) => {
                 throw new Error('Network response was not ok');
             }
             const inscripciones = await response.json();
+            console.log('Inscripciones:', inscripciones);
             const courseDetailsPromises = inscripciones.map((inscripcion) => fetchCourseDetails(inscripcion.id_course));
             const courseDetails = await Promise.all(courseDetailsPromises);
             setCourses(courseDetails);
