@@ -15,6 +15,7 @@ type Curso struct {
 	Requisitos   string    `bson:"requisitos"`
 	Url_image    string    `bson:"url_image"`
 	Fecha_inicio time.Time `bson:"fecha_inicio"`
+	Capacidad    int       `bson:"capacidad"`
 }
 
 type Cursos []Curso

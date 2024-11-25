@@ -53,6 +53,7 @@ func (service Service) GetCourseByID(ctx context.Context, id string) (cursosDoma
 		Requisitos:   cursosDAO.Requisitos,
 		Url_image:    cursosDAO.Url_image,
 		Fecha_inicio: cursosDAO.Fecha_inicio,
+		Capacidad:    cursosDAO.Capacidad,
 	}, nil
 }
 
@@ -68,6 +69,7 @@ func (service Service) Create(ctx context.Context, curso cursosDomain.CourseDto)
 		Requisitos:   curso.Requisitos,
 		Url_image:    curso.Url_image,
 		Fecha_inicio: curso.Fecha_inicio,
+		Capacidad:    curso.Capacidad,
 	}
 	id, err := service.mainRepository.Create(ctx, record)
 	if err != nil {
@@ -100,6 +102,7 @@ func (service Service) Update(ctx context.Context, curso cursosDomain.CourseDto)
 		Requisitos:   curso.Requisitos,
 		Url_image:    curso.Url_image,
 		Fecha_inicio: curso.Fecha_inicio,
+		Capacidad:    curso.Capacidad,
 	}
 
 	// Update the curso in the main repository
@@ -140,6 +143,7 @@ func (service Service) GetCourses(ctx context.Context) (cursosDomain.CoursesDto,
 			Requisitos:   course.Requisitos,
 			Url_image:    course.Url_image,
 			Fecha_inicio: course.Fecha_inicio,
+			Capacidad:    course.Capacidad,
 		}
 		coursesDto = append(coursesDto, courseDto)
 	}

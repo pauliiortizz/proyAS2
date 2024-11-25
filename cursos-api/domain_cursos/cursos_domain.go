@@ -15,6 +15,7 @@ type CourseDto struct {
 	Requisitos   string    `json:"requisitos"`
 	Url_image    string    `json:"url_image"`
 	Fecha_inicio time.Time `json:"fecha_inicio"`
+	Capacidad    int       `json:"capacidad"`
 }
 
 type CoursesDto []CourseDto

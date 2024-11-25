@@ -119,6 +119,9 @@ func (repository Mongo) Update(ctx context.Context, curso cursosDAO.Curso) error
 	if !curso.Fecha_inicio.IsZero() {
 		update["fecha_inicio"] = curso.Fecha_inicio
 	}
+	if curso.Capacidad != 0 {
+		update["capacidad"] = curso.Capacidad
+	}
 	// Update the document in MongoDB
 	if len(update) == 0 {
 		return fmt.Errorf("no fields to update for curso ID %s", curso.Course_id)

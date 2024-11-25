@@ -47,3 +47,28 @@ func (h *HttpClient) GetCourse(courseID string) (domain_inscripcion.CourseDto, e
 	}
 	return courseDto, nil
 }
+
+func (h *HttpClient) GetCourses() ([]domain_inscripcion.CourseDto, error) {
+	// Construir la URL para obtener todos los cursos
+	coursesUrl := "http://cursos-api:8081/courses"
+
+	// Realizar la solicitud HTTP GET
+	coursesResp, err := http.Get(coursesUrl)
+	if err != nil {
+		return nil, fmt.Errorf("error making request to courses-api: %w", err)
+	}
+	defer coursesResp.Body.Close()
+
+	// Verificar si la respuesta tiene un código de estado 200 OK
+	if coursesResp.StatusCode != http.StatusOK {
+		return nil, errors.New("failed to fetch courses, unexpected status code")
+	}
+
+	// Decodificar el cuerpo de la respuesta en una lista de CourseDto
+	var courses []domain_inscripcion.CourseDto
+	if err := json.NewDecoder(coursesResp.Body).Decode(&courses); err != nil {
+		return nil, fmt.Errorf("error decoding courses response: %w", err)
+	}
+
+	return courses, nil
+}

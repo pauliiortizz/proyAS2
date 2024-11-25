@@ -7,7 +7,7 @@ const (
 	MySQLPort     = "3306"
 	MySQLDatabase = "users-api"
 	MySQLUsername = "root"
-	MySQLPassword = "RaTa8855"
+	MySQLPassword = "Belgrano1905"
 	CacheDuration = 30 * time.Second
 	MemcachedHost = "memcached"
 	MemcachedPort = "11211"
