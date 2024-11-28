@@ -68,14 +68,26 @@ func (s *InscripcionService) InsertInscripcion(inscripcionDto domain_inscripcion
 	// Reducir la capacidad del curso
 	course.Capacidad -= 1
 
-	// Llamar al metodo de actualización para reflejar el cambio
-	err = s.HTTPClient.UpdateCourse(course)
-	if err != nil {
-		return inscripcionDto, fmt.Errorf("Error updating course capacity: %w", err)
-	}
+	// Crear un canal para manejar el resultado de UpdateCourse
+	resultChan := make(chan error)
+
+	// Llamar a UpdateCourse con goroutines
+	s.HTTPClient.UpdateCourse(course, resultChan)
+
+	// Escuchar el canal en otra goroutine para manejar la respuesta sin bloquear
+	go func() {
+		err := <-resultChan
+		if err != nil {
+			// En caso de error, puedes manejarlo de forma específica o simplemente loguearlo
+			fmt.Printf("Error updating course capacity: %v\n", err)
+		} else {
+			fmt.Println("Course capacity updated successfully!")
+		}
+	}()
 
 	// Asignar el ID generado a inscripcionDto
 	inscripcionDto.Id_inscripcion = int(id)
+
 	return inscripcionDto, nil
 }
 

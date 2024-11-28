@@ -18,6 +18,7 @@ import Popup from "./PopUp.jsx";
 import PopupCreate from "./PopUpCreate.jsx";
 import PopupRegister from "./PopUpRegister.jsx";
 import ItemList from './ItemList';
+import PopUpAdminDash from "./PopUpAdminDash.jsx";
 
 
 
@@ -27,6 +28,7 @@ const BurgerMenu = ({ onLogout }) => {
     const { isOpen: isPopupOpen, onOpen: onOpenPopup, onClose: onClosePopup } = useDisclosure();
     const { isOpen: isPopupOpenCreate, onOpen: onOpenPopupCreate, onClose: onClosePopupCreate } = useDisclosure();
     const { isOpen: isPopupOpenRegister, onOpen: onOpenPopupRegister, onClose: onClosePopupRegister } = useDisclosure();
+    const { isOpen: isPopupAdminDash, onOpen: onOpenAdminDash, onClose: onCloseAdminDash } = useDisclosure();
     const [userId, setUserId] = useState(null);
     const [admin, setAdmin] = useState(null);
     const [courses, setCourses] = useState([]);
@@ -110,7 +112,11 @@ const BurgerMenu = ({ onLogout }) => {
                                 <>
                                     <Button w="100%" onClick={handleLogout} style={{ fontFamily: 'Spoof Trial, sans-serif' }}>Cerrar sesión</Button>
                                     {admin ? (
+                                        <>
                                         <Button w="100%" onClick={onOpenPopupCreate} style={{ fontFamily: 'Spoof Trial, sans-serif' }}>Crear curso</Button>
+                                        <Button w="100%" onClick={onOpenAdminDash} style={{ fontFamily: 'Spoof Trial, sans-serif' }}>Tablero administrativo</Button>
+                                        </>
+
                                     ) : (
                                         <>
                                             <Button w="100%" onClick={handleMyCourses} style={{ fontFamily: 'Spoof Trial, sans-serif' }}>Mis cursos</Button>
@@ -137,6 +143,7 @@ const BurgerMenu = ({ onLogout }) => {
             <Popup isOpen={isPopupOpen} onClose={onClosePopup}/>
             <PopupCreate isOpen={isPopupOpenCreate} onClose={onClosePopupCreate} />
             <PopupRegister isOpen={isPopupOpenRegister} onClose={onClosePopupRegister} />
+            <PopUpAdminDash isOpen={isPopupAdminDash} onClose={onCloseAdminDash}/>
         </Box>
     );
 };

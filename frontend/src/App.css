@@ -236,3 +236,48 @@
   background-color: #343a40; /* Color de fondo oscuro en el tema oscuro */
   color: #ffffff; /* Color del texto en el tema oscuro */
 }
+
+
+/*Dash del admin*/
+.my-service-container {
+  display: flex; /* Cambia a flex para que los elementos se coloquen en línea */
+  justify-content: space-around; /* Ajusta según tus necesidades de espaciado */
+  align-items: center; /* Ajusta según tus necesidades de alineación vertical */
+  flex-wrap: wrap; /* Permite el ajuste automático a la siguiente línea */
+}
+
+.serviceContainer {
+  flex: 1;
+  margin: 2%;
+  padding-top: 2%;
+  padding-left: 2%;
+  @media (orientation: portrait) {
+    margin-left: 12%;
+    padding-top: 6%;
+  }
+}
+
+.service-card {
+  border: 1px solid #e0e1dd;
+  border-radius: 8px;
+  padding: 16px;
+  width: 300px;
+  text-align: center;
+  background-color: #7d7373;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: white;
+}
+
+.service-header {
+  color: #e0e1dd;
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+}
+
+.service-info {
+  margin: 8px 0;
+  color: #e0e1dd;
+}
+.textButton{
+  color: white;
+}

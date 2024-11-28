@@ -101,6 +101,7 @@ const Item = ({ course, bandera }) => {
                     <Text className="card-textt">Fecha de inicio: {formattedDate}</Text>
                     {/* eslint-disable-next-line react/prop-types */}
                     <Text className="card-textt">Requisito: Nivel {course.requisitos}</Text>
+                    <Text className="card-textt">Cupos Disponibles: {course.capacidad}</Text>
                     {/* eslint-disable-next-line react/prop-types */}
                     <Text className="card-textt">Profesor: {getProfesorName(course.profesor_id)}</Text>
                 </CardBody>
@@ -109,7 +110,7 @@ const Item = ({ course, bandera }) => {
                         isAdmin ? (
                             <Button w="40%" style={{ fontFamily: 'Spoof Trial, sans-serif' }} onClick={handleEditCourse}>Editar</Button>
                         ) : (
-                            !isEnrolled && bandera !== 1 && (
+                            !isEnrolled && bandera !== 1 && course.capacidad > 0 && (
                                 <Inscribirmebutton courseId={course.course_id} />
                             )
                         )

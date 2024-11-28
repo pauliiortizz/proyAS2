@@ -56,6 +56,7 @@ func (service Service) Search(ctx context.Context, query string, offset int, lim
 			Requisitos:   curso.Requisitos,
 			Url_image:    curso.Url_image,
 			Fecha_inicio: curso.Fecha_inicio,
+			Capacidad:    curso.Capacidad,
 		})
 	}
 
@@ -78,10 +79,12 @@ func (service Service) HandleCourseNew(cursoNew cursosDomain.CourseNew) {
 			Profesor_id:  curso.Profesor_id,
 			Categoria:    curso.Categoria,
 			Descripcion:  curso.Descripcion,
+			Valoracion:   curso.Valoracion,
 			Duracion:     curso.Duracion,
 			Requisitos:   curso.Requisitos,
 			Fecha_inicio: curso.Fecha_inicio,
 			Url_image:    curso.Url_image,
+			Capacidad:    curso.Capacidad,
 		}
 
 		if cursoNew.Operation == "CREATE" {
@@ -127,6 +130,7 @@ func (repo *SolrRepository) Index(ctx context.Context, curso cursosDomain.Course
 		"requisitos":   curso.Requisitos,
 		"url_image":    curso.Url_image,
 		"fecha_inicio": curso.Fecha_inicio,
+		"capacidad":    curso.Capacidad,
 	}
 
 	indexRequest := map[string]interface{}{
@@ -171,6 +175,7 @@ func (repo *SolrRepository) Update(ctx context.Context, curso cursosDomain.Cours
 		"requisitos":   curso.Requisitos,
 		"url_image":    curso.Url_image,
 		"fecha_inicio": curso.Fecha_inicio,
+		"capacidad":    curso.Capacidad,
 	}
 
 	updateRequest := map[string]interface{}{

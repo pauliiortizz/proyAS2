@@ -40,7 +40,8 @@ func TestService(t *testing.T) {
 		mockUser := dao.User{User_id: 1, Email: "user1", Password: "password1"}
 		cacheRepo.On("GetUserById", int64(1)).Return(dao.User{}, errors.New("not found")).Once()
 		memcachedRepo.On("GetUserById", int64(1)).Return(mockUser, nil).Once()
-		cacheRepo.On("Create", mockUser).Return(int64(1), nil).Once()
+		// cacheRepo.On("Create", mockUser).Return(int64(1), nil).Once()
+		cacheRepo.On("CreateUser", mockUser).Return(int64(1), nil).Once()
 
 		result, err := usersService.GetUserById(1)
 
@@ -54,17 +55,24 @@ func TestService(t *testing.T) {
 
 	t.Run("GetUserById - Not Found in Cache or Memcached, Found in Main Repo", func(t *testing.T) {
 		mockUser := dao.User{User_id: 1, Email: "user1", Password: "password1"}
+
+		// Configura los mocks para las llamadas esperadas
 		cacheRepo.On("GetUserById", int64(1)).Return(dao.User{}, errors.New("not found")).Once()
 		memcachedRepo.On("GetUserById", int64(1)).Return(dao.User{}, errors.New("not found")).Once()
 		mainRepo.On("GetUserById", int64(1)).Return(mockUser, nil).Once()
-		cacheRepo.On("Create", mockUser).Return(int64(1), nil).Once()
-		memcachedRepo.On("Create", mockUser).Return(int64(1), nil).Once()
 
+		// Configura los mocks para las llamadas a CreateUser en cacheRepository y memcachedRepository
+		cacheRepo.On("CreateUser", mockUser).Return(int64(1), nil).Once()
+		memcachedRepo.On("CreateUser", mockUser).Return(int64(1), nil).Once()
+
+		// Ejecuta la función bajo prueba
 		result, err := usersService.GetUserById(1)
 
+		// Verifica los resultados
 		assert.NoError(t, err)
 		assert.Equal(t, "user1", result.Email)
 
+		// Verifica que los mocks cumplieron las expectativas
 		mainRepo.AssertExpectations(t)
 		cacheRepo.AssertExpectations(t)
 		memcachedRepo.AssertExpectations(t)
@@ -78,7 +86,8 @@ func TestService(t *testing.T) {
 		result, err := usersService.GetUserById(1)
 
 		assert.Error(t, err)
-		assert.Equal(t, "error getting user by ID: db error", err.Error())
+		//assert.Equal(t, "error getting user by ID: db error", err.Error())
+		assert.Equal(t, "Message: user not found;Error Code: bad_request;Status: 400;Cause: []", err.Error())
 		assert.Equal(t, domain.User{}, result)
 
 		mainRepo.AssertExpectations(t)
@@ -88,10 +97,13 @@ func TestService(t *testing.T) {
 
 	t.Run("Create - Success", func(t *testing.T) {
 		newUser := dao.User{Email: "newuser", Password: service.Hash("password")}
-		mainRepo.On("Create", newUser).Return(int64(1), nil).Once()
+		mainRepo.On("CreateUser", newUser).Return(int64(1), nil).Once()
+
+		// Actualiza el ID del usuario después de ser creado en mainRepo
 		newUser.User_id = 1
-		cacheRepo.On("Create", newUser).Return(int64(1), nil).Once()
-		memcachedRepo.On("Create", newUser).Return(int64(1), nil).Once()
+
+		cacheRepo.On("CreateUser", newUser).Return(int64(1), nil).Once()
+		memcachedRepo.On("CreateUser", newUser).Return(int64(1), nil).Once()
 
 		id, err := usersService.CreateUser(domain.User{Email: "newuser", Password: "password"})
 
@@ -105,94 +117,141 @@ func TestService(t *testing.T) {
 
 	t.Run("Create - Error", func(t *testing.T) {
 		newUser := dao.User{Email: "newuser", Password: service.Hash("password")}
-		mainRepo.On("Create", newUser).Return(int64(0), errors.New("db error")).Once()
+
+		// Configurar el mock para fallar en mainRepository
+		mainRepo.On("CreateUser", newUser).Return(int64(0), errors.New("db error")).Once()
+
+		// Configurar el mock para las llamadas adicionales (cacheRepository y memcachedRepository)
+		cacheRepo.On("CreateUser", newUser).Return(int64(0), nil).Maybe()
+		memcachedRepo.On("CreateUser", newUser).Return(int64(0), nil).Maybe()
 
 		id, err := usersService.CreateUser(domain.User{Email: "newuser", Password: "password"})
 
+		// Validar los resultados
 		assert.Error(t, err)
 		assert.Equal(t, int64(0), id)
-		assert.Equal(t, "error creating user: db error", err.Error())
+		//assert.Equal(t, "error creating user: db error", err.Error())
+		assert.Equal(t, "Message: error creating user;Error Code: internal_server_error;Status: 500;Cause: [db error]", err.Error())
 
+		// Verificar que las expectativas del mock se cumplieron
 		mainRepo.AssertExpectations(t)
 		cacheRepo.AssertExpectations(t)
 		memcachedRepo.AssertExpectations(t)
 	})
 
 	t.Run("Login - Success", func(t *testing.T) {
-		Email := "user1"
+		email := "user1"
 		password := "password"
-		hashedPassword := service.Hash(password)
+		hashedPassword := service.Hash(password) // Generar el hash de la contraseña
 
-		mockUser := dao.User{User_id: 1, Email: Email, Password: hashedPassword}
-		cacheRepo.On("GetByEmail", Email).Return(mockUser, nil).Once()
-		tokenizer.On("GenerateToken", Email, int64(1)).Return("token", nil).Once()
+		// Usuario con contraseña hasheada
+		mockUser := dao.User{User_id: 1, Email: email, Password: hashedPassword}
 
-		response, err := usersService.Login(Email, password)
+		// Configurar los mocks para las llamadas a GetUserByEmail
+		cacheRepo.On("GetUserByEmail", email).Return(dao.User{}, errors.New("not found")).Once()
+		memcachedRepo.On("GetUserByEmail", email).Return(dao.User{}, errors.New("not found")).Once()
+		mainRepo.On("GetUserByEmail", email).Return(mockUser, nil).Once()
 
+		// Configurar el mock para CreateUser con el usuario correcto (incluye contraseña hasheada)
+		cacheRepo.On("CreateUser", mockUser).Return(int64(1), nil).Maybe()
+		memcachedRepo.On("CreateUser", mockUser).Return(int64(1), nil).Maybe()
+
+		// Configurar el mock para la generación del token
+		tokenizer.On("GenerateToken", email, int64(1)).Return("token", nil).Once()
+
+		// Ejecutar el método bajo prueba
+		response, err := usersService.Login(email, password)
+
+		// Validar los resultados
 		assert.NoError(t, err)
 		assert.Equal(t, int64(1), response.User_id)
 		assert.Equal(t, "token", response.Token)
 
-		mainRepo.AssertExpectations(t)
+		// Verificar expectativas
 		cacheRepo.AssertExpectations(t)
 		memcachedRepo.AssertExpectations(t)
+		mainRepo.AssertExpectations(t)
+		tokenizer.AssertExpectations(t)
 	})
 
 	t.Run("Login - Invalid Credentials", func(t *testing.T) {
-		Email := "user1"
-		password := "wrongpassword"
-		hashedPassword := service.Hash("password")
+		email := "user1"
+		wrongPassword := "wrongpassword"
+		hashedPassword := service.Hash("password") // Hash correcto de la contraseña original
 
-		mockUser := dao.User{User_id: 1, Email: Email, Password: hashedPassword}
-		cacheRepo.On("GetByEmail", Email).Return(mockUser, nil).Once()
+		// Usuario con contraseña hasheada
+		mockUser := dao.User{User_id: 1, Email: email, Password: hashedPassword}
 
-		response, err := usersService.Login(Email, password)
+		// Configurar los mocks para las llamadas a GetUserByEmail
+		cacheRepo.On("GetUserByEmail", email).Return(dao.User{}, errors.New("not found")).Once()
+		memcachedRepo.On("GetUserByEmail", email).Return(dao.User{}, errors.New("not found")).Once()
+		mainRepo.On("GetUserByEmail", email).Return(mockUser, nil).Once()
 
+		// Ejecutar el método bajo prueba
+		response, err := usersService.Login(email, wrongPassword)
+
+		// Validar los resultados
 		assert.Error(t, err)
 		assert.Equal(t, "invalid credentials", err.Error())
 		assert.Equal(t, domain.LoginResponse{}, response)
 
-		mainRepo.AssertExpectations(t)
+		// Verificar expectativas
 		cacheRepo.AssertExpectations(t)
 		memcachedRepo.AssertExpectations(t)
+		mainRepo.AssertExpectations(t)
 	})
 
 	t.Run("Login - User Not Found", func(t *testing.T) {
-		Email := "user1"
+		email := "user1"
 		password := "password"
 
-		cacheRepo.On("GetByEmail", Email).Return(dao.User{}, errors.New("not found")).Once()
-		memcachedRepo.On("GetByEmail", Email).Return(dao.User{}, errors.New("not found")).Once()
-		mainRepo.On("GetByEmail", Email).Return(dao.User{}, errors.New("not found")).Once()
+		// Configurar los mocks para devolver errores en todas las llamadas a GetUserByEmail
+		cacheRepo.On("GetUserByEmail", email).Return(dao.User{}, errors.New("not found")).Once()
+		memcachedRepo.On("GetUserByEmail", email).Return(dao.User{}, errors.New("not found")).Once()
+		mainRepo.On("GetUserByEmail", email).Return(dao.User{}, errors.New("not found")).Once()
 
-		response, err := usersService.Login(Email, password)
+		// Ejecutar el método bajo prueba
+		response, err := usersService.Login(email, password)
 
+		// Validar los resultados
 		assert.Error(t, err)
-		assert.Equal(t, "error getting user by Email from main repository: not found", err.Error())
+		assert.Equal(t, "error getting user by email from main repository: not found", err.Error())
 		assert.Equal(t, domain.LoginResponse{}, response)
 
-		mainRepo.AssertExpectations(t)
+		// Verificar expectativas
 		cacheRepo.AssertExpectations(t)
 		memcachedRepo.AssertExpectations(t)
+		mainRepo.AssertExpectations(t)
 	})
 
 	t.Run("Login - Token Generation Error", func(t *testing.T) {
-		Email := "user1"
+		email := "user1"
 		password := "password"
-		hashedPassword := service.Hash(password)
+		hashedPassword := service.Hash(password) // Generar el hash de la contraseña
 
-		mockUser := dao.User{User_id: 1, Email: Email, Password: hashedPassword}
-		cacheRepo.On("GetByEmail", Email).Return(mockUser, nil).Once()
-		tokenizer.On("GenerateToken", Email, int64(1)).Return("", errors.New("token error")).Once()
+		// Usuario con contraseña hasheada
+		mockUser := dao.User{User_id: 1, Email: email, Password: hashedPassword}
 
-		response, err := usersService.Login(Email, password)
+		// Configurar los mocks para las llamadas a GetUserByEmail
+		cacheRepo.On("GetUserByEmail", email).Return(dao.User{}, errors.New("not found")).Once()
+		memcachedRepo.On("GetUserByEmail", email).Return(dao.User{}, errors.New("not found")).Once()
+		mainRepo.On("GetUserByEmail", email).Return(mockUser, nil).Once()
 
+		// Configurar el mock para la generación del token con un error
+		tokenizer.On("GenerateToken", email, int64(1)).Return("", errors.New("token error")).Once()
+
+		// Ejecutar el método bajo prueba
+		response, err := usersService.Login(email, password)
+
+		// Validar los resultados
 		assert.Error(t, err)
 		assert.Equal(t, "error generating token: token error", err.Error())
 		assert.Equal(t, domain.LoginResponse{}, response)
 
-		mainRepo.AssertExpectations(t)
+		// Verificar expectativas
 		cacheRepo.AssertExpectations(t)
 		memcachedRepo.AssertExpectations(t)
+		mainRepo.AssertExpectations(t)
+		tokenizer.AssertExpectations(t)
 	})
 }

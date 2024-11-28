@@ -101,6 +101,7 @@ services:
     networks:
       - app-network
 
+
   inscripcion-api:
     image: inscripciones-api:latest
     container_name: inscripciones-api-container
@@ -114,6 +115,7 @@ services:
       - mysql
     networks:
       - app-network
+
 
   frontend:
     build: ./frontend

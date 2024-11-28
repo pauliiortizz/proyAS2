@@ -14,6 +14,7 @@ const CreateCourse = ({ onClose }) => {
     const [requisitos, setRequisitos] = React.useState('');
     const [url_image, setUrl_image] = React.useState('');
     const [fecha_inicio, setFecha_inicio] = React.useState('');
+    const [capacidad, setCapacidad] = React.useState('');
     const [errorMessage, setErrorMessage] = React.useState('');
 
     const handleSubmit = async (e) => {
@@ -35,7 +36,8 @@ const CreateCourse = ({ onClose }) => {
             valoracion: parseFloat(valoracion),
             requisitos,
             url_image,
-            fecha_inicio: new Date(fecha_inicio).toISOString() // Convertir la fecha a ISO 8601
+            fecha_inicio: new Date(fecha_inicio).toISOString(), // Convertir la fecha a ISO 8601
+            capacidad: parseInt(duracion, 10),
         };
         console.log('Enviando datos:', data);
 
@@ -118,6 +120,10 @@ const CreateCourse = ({ onClose }) => {
             <FormControl>
                 <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Fecha de inicio</FormLabel>
                 <Input type="date" value={fecha_inicio} onChange={(e) => setFecha_inicio(e.target.value)} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
+            </FormControl>
+            <FormControl>
+                <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Capacidad</FormLabel>
+                <Input value={capacidad} onChange={(e) => setCapacidad(e.target.value)} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
             {errorMessage && <p style={{fontFamily: 'Spoof Trial, sans-serif'}}>{errorMessage}</p>}
             <Button type="submit">Crear curso</Button>

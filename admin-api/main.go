@@ -1,29 +1,19 @@
-package admin_api
+package main
 
 import (
-	controllers "admin-api/controller_admin"
-	services "admin-api/service_admin"
-	"log"
-
-	"github.com/gin-gonic/gin"
+	app "admin-api/app"
+	client "admin-api/client_admin"
 )
 
 func main() {
-	// Inicializar el servicio Docker
-	dockerService, err := services.NewDockerService()
-	if err != nil {
-		log.Fatalf("Error initializing Docker service: %v", err)
+
+	services := client.GetScalableServices()
+
+	for _, service := range services {
+
+		go client.AutoScale(service)
+
 	}
 
-	// Crear el controlador
-	dockerController := controllers.NewDockerController(dockerService)
-
-	// Configurar las rutas
-	r := gin.Default()
-	r.GET("/containers", dockerController.ListContainers)
-
-	// Iniciar el servidor
-	if err := r.Run(":8080"); err != nil {
-		log.Fatalf("Error starting server: %v", err)
-	}
+	app.StartRoute()
 }

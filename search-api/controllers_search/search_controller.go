@@ -57,25 +57,3 @@ func (controller Controller) Search(c *gin.Context) {
 	// Send response
 	c.JSON(http.StatusOK, courses)
 }
-
-/*
-func GetCourses(c *gin.Context) {
-
-	var coursesDto domain
-	var err error
-
-	city := c.Query("city")
-
-	if city == "" {
-		hotelsDto, err = service.HotelService.GetHotels()
-	} else {
-		hotelsDto, err = service.HotelService.GetHotelByCity(city)
-	}
-
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, hotelsDto)
-}*/

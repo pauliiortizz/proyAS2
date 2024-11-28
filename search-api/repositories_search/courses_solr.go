@@ -37,6 +37,7 @@ func NewSolr(config SolrConfig) Solr {
 func (searchEngine Solr) Index(ctx context.Context, course coursesDomain.CourseDto) (string, error) {
 	// Prepare the document for Solr
 	doc := map[string]interface{}{
+		"id":           course.Course_id,
 		"course_id":    course.Course_id,
 		"nombre":       course.Nombre,
 		"profesor_id":  course.Profesor_id,
@@ -47,6 +48,7 @@ func (searchEngine Solr) Index(ctx context.Context, course coursesDomain.CourseD
 		"requisitos":   course.Requisitos,
 		"url_image":    course.Url_image,
 		"fecha_inicio": course.Fecha_inicio,
+		"capacidad":    course.Capacidad,
 	}
 
 	// Prepare the index request
@@ -82,6 +84,7 @@ func (searchEngine Solr) Index(ctx context.Context, course coursesDomain.CourseD
 func (searchEngine Solr) Update(ctx context.Context, course coursesDomain.CourseDto) error {
 	// Prepare the document for Solr
 	doc := map[string]interface{}{
+		"id":           course.Course_id,
 		"course_id":    course.Course_id,
 		"nombre":       course.Nombre,
 		"profesor_id":  course.Profesor_id,
@@ -92,6 +95,7 @@ func (searchEngine Solr) Update(ctx context.Context, course coursesDomain.Course
 		"requisitos":   course.Requisitos,
 		"url_image":    course.Url_image,
 		"fecha_inicio": course.Fecha_inicio,
+		"capacidad":    course.Capacidad,
 	}
 
 	// Prepare the update request
@@ -181,6 +185,7 @@ func (searchEngine Solr) Search(ctx context.Context, query string, limit int, of
 			Requisitos:   getStringField(doc, "requisitos"),
 			Url_image:    getStringField(doc, "url_image"),
 			Fecha_inicio: getTimeField(doc, "fecha_inicio"),
+			Capacidad:    getIntField(doc, "capacidad"),
 		}
 		coursesList = append(coursesList, course)
 	}

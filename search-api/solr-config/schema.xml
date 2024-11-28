@@ -11,9 +11,11 @@
         <field name="requisitos" type="text_general" indexed="true" stored="true"/>
         <field name="url_image" type="text_general" indexed="true" stored="true"/>
         <field name="fecha_inicio" type="date" indexed="true" stored="true"/>
+        <field name="capacidad" type="string" indexed="true" stored="true"/>
     </fields>
 
     <uniqueKey>id</uniqueKey>
+
 
     <defaultSearchField>nombre</defaultSearchField>
     <similarity class="solr.ClassicSimilarity"/>

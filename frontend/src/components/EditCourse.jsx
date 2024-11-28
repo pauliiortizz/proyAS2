@@ -13,6 +13,7 @@ const EditCourse = ({ courseId, onClose }) => {
     const [requisitos, setRequisitos] = React.useState('');
     const [url_image, setUrl_image] = React.useState('');
     const [fecha_inicio, setFecha_inicio] = React.useState('');
+    const [capacidad, setCapacidad] = React.useState('');
     const [errorMessage, setErrorMessage] = React.useState('');
 
     useEffect(() => {
@@ -33,6 +34,8 @@ const EditCourse = ({ courseId, onClose }) => {
                     setRequisitos(courseData.requisitos);
                     setUrl_image(courseData.url_image);
                     setFecha_inicio(new Date(courseData.fecha_inicio).toISOString().split('T')[0]); // Formato yyyy-mm-dd
+                    setCapacidad(courseData.capacidad);
+
                 } else {
                     console.error('Error al obtener los datos del curso');
                 }
@@ -56,7 +59,8 @@ const EditCourse = ({ courseId, onClose }) => {
             duracion: duracion ? parseInt(duracion, 10) : undefined,
             requisitos: requisitos || undefined,
             url_image: url_image || undefined,
-            fecha_inicio: fecha_inicio ? new Date(fecha_inicio).toISOString() : undefined
+            fecha_inicio: fecha_inicio ? new Date(fecha_inicio).toISOString() : undefined,
+            capacidad: capacidad || undefined
         };
 
         try {
@@ -111,6 +115,10 @@ const EditCourse = ({ courseId, onClose }) => {
             <FormControl>
                 <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Fecha de inicio</FormLabel>
                 <Input type="date" value={fecha_inicio} onChange={(e) => setFecha_inicio(e.target.value)} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
+            </FormControl>
+            <FormControl>
+                <FormLabel style={{fontFamily: 'Spoof Trial, sans-serif'}}>Capacidad</FormLabel>
+                <Input value={capacidad} onChange={(e) => setCapacidad(e.target.value)} style={{border:'2px solid black',fontFamily: 'Spoof Trial, sans-serif'}}/>
             </FormControl>
             {errorMessage && <p style={{fontFamily: 'Spoof Trial, sans-serif'}} className="error">{errorMessage}</p>}
             <Button type="submit">Editar curso</Button>
