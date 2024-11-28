@@ -6,7 +6,7 @@ mongo --username root --password root --authenticationDatabase admin
 
 show dbs
 
-use courses
+use courses-api
 
 db.courses.insertMany([
     {
@@ -18,7 +18,8 @@ db.courses.insertMany([
         "duracion": 9000,
         "requisitos": "Bajo",
         "url_image": "https://www.freecodecamp.org/news/content/images/2021/10/golang.png",
-        "fecha_inicio": "2025-06-09"
+        "fecha_inicio": "2025-06-09",
+        "capacidad" : 3
     },
     {
         "nombre": "Bartender ricos tragos",
@@ -29,7 +30,8 @@ db.courses.insertMany([
         "duracion": 45,
         "requisitos": "Bajo",
         "url_image": "https://s3-eu-west-1.amazonaws.com/verema/images/valoraciones/0011/0991/coctel.jpg?1353314930",
-        "fecha_inicio": "2025-06-03"
+        "fecha_inicio": "2025-06-03",
+        "capacidad" : 1
     },
     {
         "nombre": "Peluqueria intensiva",
@@ -40,7 +42,8 @@ db.courses.insertMany([
         "duracion": 80,
         "requisitos": "Bajo",
         "url_image": "https://joseppons.com/formacion/wp-content/uploads/2019/06/abrir-tu-salon-peluqueria.jpg",
-        "fecha_inicio": "2025-07-10"
+        "fecha_inicio": "2025-07-10",
+        "capacidad" : 2
     },
     {
         "nombre": "Golang avanzado",
@@ -51,7 +54,8 @@ db.courses.insertMany([
         "duracion": 600,
         "requisitos": "Alto",
         "url_image": "https://www.freecodecamp.org/news/content/images/2021/10/golang.png",
-        "fecha_inicio": "2025-07-10"
+        "fecha_inicio": "2025-07-10",
+        "capacidad" : 4
     },
     {
         "nombre": "Pasteleria con Lucas",
@@ -62,7 +66,8 @@ db.courses.insertMany([
         "duracion": 150,
         "requisitos": "Bajo",
         "url_image": "https://www.ceac.es/sites/default/files/2019-08/ceac-27-03-2019-reposteria.jpg.webp",
-        "fecha_inicio": "2025-08-12"
+        "fecha_inicio": "2025-08-12",
+        "capacidad" : 7
     },
     {
         "nombre": "Bossa Nova en guitarra",
@@ -73,7 +78,8 @@ db.courses.insertMany([
         "duracion": 68,
         "requisitos": "Intermedio",
         "url_image": "https://img.freepik.com/fotos-premium/foto-persona-irreconocible-tocando-guitarra_762026-81126.jpg",
-        "fecha_inicio": "2025-03-10"
+        "fecha_inicio": "2025-03-10",
+        "capacidad" : 6
     },
     {
         "nombre": "Maquillaje artistico, brillos y fantasia",
@@ -84,7 +90,8 @@ db.courses.insertMany([
         "duracion": 72,
         "requisitos": "Bajo",
         "url_image": "https://st2.depositphotos.com/6940744/12394/i/450/depositphotos_123947758-stock-photo-years-old-boy-with-blue.jpg",
-        "fecha_inicio": "2025-09-09"
+        "fecha_inicio": "2025-09-09",
+        "capacidad" : 4
     },
     {
         "nombre": "Coffee coctels",
@@ -95,7 +102,8 @@ db.courses.insertMany([
         "duracion": 70,
         "requisitos": "Intermedio",
         "url_image": "https://apasionados-por-el-cafe.s3.amazonaws.com/wp-content/uploads/2020/12/shutterstock_1035562495-min_opt.jpg",
-        "fecha_inicio": "2025-11-01"
+        "fecha_inicio": "2025-11-01",
+        "capacidad" : 3
     },
     {
         "nombre": "C++ primeros pasos",
@@ -106,13 +114,10 @@ db.courses.insertMany([
         "duracion": 120,
         "requisitos": "Bajo",
         "url_image": "https://blog.facialix.com/wp-content/uploads/2023/11/curso-gratis-cpp.jpg",
-        "fecha_inicio": "2025-03-02"
+        "fecha_inicio": "2025-03-02",
+        "capacidad" :7
     }
 ])
-
-
-LUEGO DE ESO PONER ESTO:
-
 
 db.courses.updateMany(
     { "fecha_inicio": { $type: "string" } },
@@ -126,6 +131,5 @@ db.courses.updateMany(
         }
     ]
 )
-
 
 db.courses.find().pretty()

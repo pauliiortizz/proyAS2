@@ -55,7 +55,7 @@ func (repository *MySQL) GetInscripcionByUserID(userID int) ([]inscripcionDao.In
 }
 
 // GetInscripcionByCourseID - Busca inscripciones por ID de curso usando GORM
-func (repository *MySQL) GetInscripcionByCourseID(courseID int) ([]inscripcionDao.Inscripcion, error) {
+func (repository *MySQL) GetInscripcionByCourseID(courseID string) ([]inscripcionDao.Inscripcion, error) {
 	var inscripciones []inscripcionDao.Inscripcion
 	if err := repository.db.Where("id_course = ?", courseID).Find(&inscripciones).Error; err != nil {
 		return nil, fmt.Errorf("error fetching inscripciones by course ID: %w", err)

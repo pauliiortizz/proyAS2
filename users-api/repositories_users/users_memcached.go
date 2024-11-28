@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/bradfitz/gomemcache/memcache"
-	"users/dao_users"
+	users "users/dao_users"
 )
 
 type MemcachedConfig struct {

@@ -6,14 +6,14 @@ import (
 	"inscripciones/dao_inscripcion"
 	"inscripciones/domain_inscripcion"
 	"inscripciones/utils"
-	"strconv"
+	//"strconv"
 	"time"
 )
 
 type InscripcionRepository interface {
 	InsertInscripcion(inscripcionDto dao_inscripcion.Inscripcion) (int64, error)
 	GetInscripcionByUserID(userID int) ([]dao_inscripcion.Inscripcion, error)
-	GetInscripcionByCourseID(courseID int) ([]dao_inscripcion.Inscripcion, error)
+	GetInscripcionByCourseID(courseID string) ([]dao_inscripcion.Inscripcion, error)
 }
 
 type InscripcionService struct {
@@ -48,6 +48,11 @@ func (s *InscripcionService) InsertInscripcion(inscripcionDto domain_inscripcion
 		return inscripcionDto, errors.New("la inscripción debe realizarse antes de la fecha de inicio del curso")
 	}
 
+	// Verificar disponibilidad del curso antes de proceder con la inscripción
+	if course.Capacidad <= 0 {
+		return inscripcionDto, errors.New("no hay cupos disponibles para el curso")
+	}
+
 	// Crear la inscripción en la base de datos
 	inscripcion := dao_inscripcion.Inscripcion{
 		Fecha_inscripcion: inscripcionDto.Fecha_inscripcion,
@@ -60,6 +65,15 @@ func (s *InscripcionService) InsertInscripcion(inscripcionDto domain_inscripcion
 		return inscripcionDto, err
 	}
 
+	// Reducir la capacidad del curso
+	course.Capacidad -= 1
+
+	// Llamar al metodo de actualización para reflejar el cambio
+	err = s.HTTPClient.UpdateCourse(course)
+	if err != nil {
+		return inscripcionDto, fmt.Errorf("Error updating course capacity: %w", err)
+	}
+
 	// Asignar el ID generado a inscripcionDto
 	inscripcionDto.Id_inscripcion = int(id)
 	return inscripcionDto, nil
@@ -69,65 +83,6 @@ func (s *InscripcionService) GetInscripcionByUserID(userID int) ([]dao_inscripci
 	return s.repository.GetInscripcionByUserID(userID)
 }
 
-func (s *InscripcionService) GetInscripcionByCourseID(courseID int) ([]dao_inscripcion.Inscripcion, error) {
+func (s *InscripcionService) GetInscripcionByCourseID(courseID string) ([]dao_inscripcion.Inscripcion, error) {
 	return s.repository.GetInscripcionByCourseID(courseID)
-}
-
-func (s *InscripcionService) CheckAvailability(courseID int) (bool, error) {
-	// Obtener el curso a través de la API de cursos
-	course, err := s.HTTPClient.GetCourse(strconv.Itoa(courseID))
-	if err != nil {
-		return false, fmt.Errorf("Error getting course: %w", err)
-	}
-
-	// Obtener todas las inscripciones asociadas al curso
-	inscripciones, err := s.repository.GetInscripcionByCourseID(courseID)
-	if err != nil {
-		return false, fmt.Errorf("Error getting inscriptions for course: %w", err)
-	}
-
-	// Calcular los cupos disponibles
-	cuposDisponibles := course.Capacidad - len(inscripciones)
-	if cuposDisponibles > 0 {
-		return true, nil
-	}
-
-	return false, nil
-}
-
-func (s *InscripcionService) CheckAllAvailability(fechaActual time.Time) ([]domain_inscripcion.CourseDto, error) {
-	// Obtener todos los cursos disponibles
-	courses, err := s.HTTPClient.GetCourses()
-	if err != nil {
-		return nil, fmt.Errorf("Error getting all courses: %w", err)
-	}
-
-	var availableCourses []domain_inscripcion.CourseDto
-
-	for _, course := range courses {
-		// Convertir el Course_id de string a int
-		courseID, err := strconv.Atoi(course.Course_id)
-		if err != nil {
-			return nil, fmt.Errorf("Error converting Course_id '%s' to int: %w", course.Course_id, err)
-		}
-
-		// Verificar que el curso no haya comenzado
-		if !fechaActual.Before(course.Fecha_inicio) {
-			continue // Saltar este curso si ya ha comenzado
-		}
-
-		// Obtener todas las inscripciones asociadas al curso
-		inscripciones, err := s.repository.GetInscripcionByCourseID(courseID)
-		if err != nil {
-			return nil, fmt.Errorf("Error getting inscriptions for course %d: %w", courseID, err)
-		}
-
-		// Calcular cupos disponibles
-		cuposDisponibles := course.Capacidad - len(inscripciones)
-		if cuposDisponibles > 0 {
-			availableCourses = append(availableCourses, course)
-		}
-	}
-
-	return availableCourses, nil
 }

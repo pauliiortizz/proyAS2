@@ -13,7 +13,7 @@ import (
 type InscripcionServiceInterface interface {
 	InsertInscripcion(inscripcionDto domain_inscripcion.InscripcionDto) (domain_inscripcion.InscripcionDto, error)
 	GetInscripcionByUserID(userID int) ([]dao_inscripcion.Inscripcion, error)
-	GetInscripcionByCourseID(courseID int) ([]dao_inscripcion.Inscripcion, error)
+	GetInscripcionByCourseID(courseID string) ([]dao_inscripcion.Inscripcion, error)
 }
 
 type InscripcionController struct {
@@ -62,18 +62,20 @@ func (controller *InscripcionController) GetInscripcionByUserID(c *gin.Context) 
 }
 
 func (controller *InscripcionController) GetInscripcionByCourseID(c *gin.Context) {
-	courseIDParam := c.Param("courseID")
-	courseID, err := strconv.Atoi(courseIDParam)
-	if err != nil {
+	// Obtener el parámetro courseID de la URL
+	courseID := c.Param("courseID")
+	if courseID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid course ID"})
 		return
 	}
 
+	// Llamar al servicio para obtener las inscripciones por courseID
 	inscripciones, err := controller.service.GetInscripcionByCourseID(courseID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	// Devolver las inscripciones como respuesta
 	c.JSON(http.StatusOK, inscripciones)
 }

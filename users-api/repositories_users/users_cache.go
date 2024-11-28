@@ -50,11 +50,11 @@ func (repository Cache) GetUserById(id int64) (dao.User, error) {
 	return userDAO, nil
 }
 
-func (repository Cache) GetUserByEmail(email string) (dao.User, error) {
-	fmt.Println("Buscando", email)
+func (repository Cache) GetUserByEmail(Email string) (dao.User, error) {
+	fmt.Println("Buscando", Email)
 
 	// Use username as cache key
-	userKey := fmt.Sprintf(keyByEmail, email)
+	userKey := fmt.Sprintf(keyByEmail, Email)
 
 	// Try to get from cache
 	item := repository.client.Get(userKey)
@@ -68,7 +68,7 @@ func (repository Cache) GetUserByEmail(email string) (dao.User, error) {
 	}
 
 	// If not found, return cache miss error
-	return dao.User{}, fmt.Errorf("cache miss for email %s", email)
+	return dao.User{}, fmt.Errorf("cache miss for email %s", Email)
 }
 
 func (repository Cache) CreateUser(user dao.User) (int64, error) {

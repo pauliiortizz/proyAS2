@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -71,4 +72,40 @@ func (h *HttpClient) GetCourses() ([]domain_inscripcion.CourseDto, error) {
 	}
 
 	return courses, nil
+}
+
+func (h *HttpClient) UpdateCourse(course domain_inscripcion.CourseDto) error {
+	// Construir la URL para actualizar un curso
+	courseUrl := fmt.Sprintf("http://cursos-api:8081/edit/%s", course.Course_id)
+
+	// Serializar el curso en formato JSON
+	payload, err := json.Marshal(course)
+	if err != nil {
+		return fmt.Errorf("error marshaling course data: %w", err)
+	}
+
+	// Crear una nueva solicitud HTTP PUT
+	req, err := http.NewRequest(http.MethodPut, courseUrl, bytes.NewBuffer(payload))
+	if err != nil {
+		return fmt.Errorf("error creating PUT request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	// Ejecutar la solicitud
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("error making PUT request to courses-api: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// Verificar el código de respuesta
+	if resp.StatusCode != http.StatusOK {
+		var errorResponse map[string]interface{}
+		if err := json.NewDecoder(resp.Body).Decode(&errorResponse); err != nil {
+			return fmt.Errorf("failed to update course, status code: %d", resp.StatusCode)
+		}
+		return fmt.Errorf("failed to update course, response: %v", errorResponse)
+	}
+
+	return nil
 }
