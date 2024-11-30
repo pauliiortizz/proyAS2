@@ -22,3 +22,7 @@ EXPOSE 8081
 
 # Command to run the binary
 CMD ["./app"]
+
+FROM nginx:latest
+COPY nginx.conf /etc/nginx/nginx.conf
+EXPOSE 80
