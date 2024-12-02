@@ -34,7 +34,7 @@ const EditCourse = ({ courseId, onClose }) => {
                     setRequisitos(courseData.requisitos);
                     setUrl_image(courseData.url_image);
                     setFecha_inicio(new Date(courseData.fecha_inicio).toISOString().split('T')[0]); // Formato yyyy-mm-dd
-                    setCapacidad(courseData.capacidad);
+                    setCapacidad(courseData.capacidad.toString());
 
                 } else {
                     console.error('Error al obtener los datos del curso');

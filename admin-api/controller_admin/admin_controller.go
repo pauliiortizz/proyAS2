@@ -8,5 +8,15 @@ import (
 
 func GetServices(c *gin.Context) {
 
-	c.JSON(http.StatusOK, service_admin.GetServices(c.Request.Context()))
+	services, err := service_admin.GetServices(c.Request.Context())
+	if err != nil {
+		// Devolver una respuesta con el error
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	// Devolver los servicios en caso de éxito
+	c.JSON(http.StatusOK, services)
 }

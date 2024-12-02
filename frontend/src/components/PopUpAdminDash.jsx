@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
     Drawer,
     DrawerOverlay,
@@ -13,52 +13,25 @@ import {
 import Cookies from "js-cookie";
 
 const DashAdminPopup = ({ isOpen, onClose }) => {
-    const [userData, setUserData] = useState(null); // Datos del usuario
     const [containers, setContainers] = useState([]); // Lista de contenedores
-    const [loadingUser, setLoadingUser] = useState(true); // Estado de carga del usuario
-    const [loadingContainers, setLoadingContainers] = useState(false); // Estado de carga de los contenedores
-    const [errorUser, setErrorUser] = useState(null); // Error al obtener usuario
-    const [errorContainers, setErrorContainers] = useState(null); // Error al obtener contenedores
+    const [loadingContainers, setLoadingContainers] = useState(false); // Estado de carga
+    const [errorContainers, setErrorContainers] = useState(null); // Estado de error
 
     const token = Cookies.get("token");
-    const user_id = Cookies.get("user_id");
-
-    // Fetch de los datos del usuario
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const response = await fetch(`http://localhost:8080/users/${user_id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error("Failed to fetch admin data");
-                }
-
-                const userData = await response.json();
-                setUserData(userData);
-
-                if (!userData.Admin) {
-                    setErrorUser("Acceso denegado. No eres administrador.");
-                }
-            } catch (error) {
-                console.error("Error fetching user:", error);
-                setErrorUser("Error al obtener datos del administrador.");
-            } finally {
-                setLoadingUser(false);
-            }
-        };
-
-        fetchUser();
-    }, [user_id, token]);
 
     // Fetch de los datos de contenedores
     const fetchContainers = async () => {
         setLoadingContainers(true);
+        setErrorContainers(null); // Limpiar errores previos
+
+        if (!token) {
+            setErrorContainers("Token no encontrado. Por favor inicia sesión.");
+            setLoadingContainers(false);
+            return;
+        }
+
         try {
-            const response = await fetch("http://localhost:8004/admin/containers", {
+            const response = await fetch("http://host.docker.internal:8004/services", {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -71,7 +44,7 @@ const DashAdminPopup = ({ isOpen, onClose }) => {
             }
 
             const containerData = await response.json();
-            setContainers(containerData);
+            setContainers(containerData.services || []); // Aseguramos la estructura
         } catch (error) {
             console.error("Error fetching containers:", error);
             setErrorContainers("Error al obtener la lista de contenedores.");
@@ -87,39 +60,37 @@ const DashAdminPopup = ({ isOpen, onClose }) => {
                 <DrawerCloseButton />
                 <DrawerHeader>Tablero Administrativo</DrawerHeader>
                 <DrawerBody>
-                    {loadingUser ? (
-                        <p>Cargando datos del administrador...</p>
-                    ) : errorUser ? (
-                        <p style={{ color: "red" }}>{errorUser}</p>
-                    ) : (
-                        <VStack spacing={4}>
-                            <Box>
-                                <p><strong>Nombre:</strong> {userData.name}</p>
-                                <p><strong>Email:</strong> {userData.email}</p>
-                                <p><strong>Rol:</strong> Administrador</p>
+                    <VStack spacing={4}>
+                        <Button
+                            w="100%"
+                            onClick={fetchContainers}
+                            isLoading={loadingContainers}
+                            style={{ fontFamily: "Spoof Trial, sans-serif" }}
+                        >
+                            Ver contenedores
+                        </Button>
+                        {errorContainers && (
+                            <Box w="100%" color="red.500">
+                                {errorContainers}
                             </Box>
-                            <Button
-                                w="100%"
-                                onClick={fetchContainers}
-                                isLoading={loadingContainers}
-                                style={{ fontFamily: "Spoof Trial, sans-serif" }}
-                            >
-                                Ver contenedores
-                            </Button>
-                            {errorContainers && <p style={{ color: "red" }}>{errorContainers}</p>}
-                            {!loadingContainers && containers.length > 0 && (
-                                <Box w="100%" className="containerGrid">
-                                    {containers.map((container) => (
-                                        <Box key={container.ID} className="containerCard">
-                                            <p><strong>ID:</strong> {container.ID}</p>
-                                            <p><strong>Imagen:</strong> {container.Image}</p>
-                                            <p><strong>Estado:</strong> {container.Status}</p>
-                                        </Box>
-                                    ))}
-                                </Box>
-                            )}
-                        </VStack>
-                    )}
+                        )}
+                        {!loadingContainers && containers.length > 0 && (
+                            <Box w="100%" className="containerGrid">
+                                {containers.map((container, index) => (
+                                    <Box key={index} className="containerCard">
+                                        <p>
+                                            <strong>Nombre:</strong>{" "}
+                                            {container.name.join(", ")}
+                                        </p>
+                                        <p>
+                                            <strong>ID:</strong>{" "}
+                                            {container.containers.join(", ")}
+                                        </p>
+                                    </Box>
+                                ))}
+                            </Box>
+                        )}
+                    </VStack>
                 </DrawerBody>
             </DrawerContent>
         </Drawer>

@@ -14,7 +14,7 @@ type DockerClient struct {
 }
 
 func NewDockerClient() DockerClient {
-	client, err := client.NewClientWithOpts(client.FromEnv)
+	client, err := client.NewClientWithOpts(client.WithVersion("1.45"))
 	if err != nil {
 		log.Fatalf("error initializing docker client: %s", err.Error())
 	}

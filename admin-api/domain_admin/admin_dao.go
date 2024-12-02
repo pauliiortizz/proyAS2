@@ -5,6 +5,6 @@ type ServicesResponse struct {
 }
 
 type Service struct {
-	Name       string   `json:"name"`
+	Name       []string `json:"name"`
 	Containers []string `json:"containers"`
 }
