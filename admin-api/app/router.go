@@ -20,5 +20,4 @@ func StartRoute() {
 
 	log.Info("Starting server")
 	router.Run(":8004")
-
 }
